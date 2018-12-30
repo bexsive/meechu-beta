@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:id="@+id/parent_layout">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/image"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@mipmap/ic_launcher"
+        />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventNameText"
+        android:text="Placeholder eventNameText"
+        android:textAlignment="center"
+        android:layout_toEndOf="@+id/image"
+        android:layout_toRightOf="@+id/image"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/venueNameText"
+        android:text="Placeholder venueNameText"
+        android:textAlignment="center"
+        android:layout_below="@+id/eventNameText"
+        android:layout_toEndOf="@+id/image"
+        android:layout_toRightOf="@+id/image"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/startTimeText"
+        android:text="Placeholder startTimeText"
+        android:textAlignment="center"
+        android:layout_below="@+id/venueNameText"
+        android:layout_toEndOf="@+id/image"
+        android:layout_toRightOf="@+id/image"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/distanceAwayText"
+        android:text="Placeholder distanceAwayText"
+        android:textAlignment="center"
+        android:layout_below="@id/startTimeText"
+        android:layout_toEndOf="@+id/image"
+        android:layout_toRightOf="@+id/image"
+        />
+
+</RelativeLayout>

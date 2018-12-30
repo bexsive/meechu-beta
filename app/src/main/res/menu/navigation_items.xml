@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/navigation_item_social_circles"
+            android:checked="true"
+            android:title="Social Circles"/>
+        <item
+            android:id="@+id/navigation_item_user_profile"
+            android:checked="true"
+            android:title="User Profile"/>
+        <item
+            android:id="@+id/navigation_item_categories"
+            android:title="Settings"/>
+    </group>
+</menu>
