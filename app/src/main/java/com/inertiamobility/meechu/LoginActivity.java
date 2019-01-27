@@ -2,7 +2,6 @@ package  com.inertiamobility.meechu;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -26,7 +25,7 @@ public class LoginActivity extends AppCompatActivity {
     Button login_button;
     EditText Email, Pass;
     AlertDialog.Builder builder;
-    User user = new User();
+    User user;
 
     private SharedPreferenceConfig preferenceConfig;
 

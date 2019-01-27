@@ -65,19 +65,14 @@ public class MainActivity extends AppCompatActivity {
                 switch(menuItem.getItemId()){
 
                     case R.id.navigation_item_social_circles:
-                        //Todo: Launch user activity
-                        startActivity(new Intent(getApplicationContext(), ProfileActivity.class));
+                        startActivity(new Intent(getApplicationContext(), SearchFriendsActivity.class));
 
-                        //displayMessage("Working click recognition");
                         drawerLayout.closeDrawers();
                         return true;
-
                 }
                 return false;
             }
         });
-
-
 
     }
 

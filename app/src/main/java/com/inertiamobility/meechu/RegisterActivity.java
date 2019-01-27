@@ -25,7 +25,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     EditText Name, Email, Pass, ConPass;
     Button reg_button;
-    User newUser = new User();
+    User newUser;
 
     AlertDialog.Builder builder;
 

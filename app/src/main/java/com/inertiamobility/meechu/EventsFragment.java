@@ -84,9 +84,6 @@ public class EventsFragment extends Fragment {
         //TODO: pull user_id from shared preferences object
         Call<EventList> call = api.getEvents(userID);
 
-        //Call<EventList> call = api.getEvents();
-
-
         call.enqueue(new Callback<EventList>() {
             @Override
             public void onResponse(Call<EventList> call, Response<EventList> response) {
@@ -95,8 +92,6 @@ public class EventsFragment extends Fragment {
                 for (int i = 0; i < eventList.events.size(); i++){
                     events.add(eventList.events.get(i));
                 }
-                //adapter.notifyDataSetChanged();
-                //refreshLayout.setRefreshing(false);
             }
             @Override
             public void onFailure(Call<EventList> call, Throwable t) {

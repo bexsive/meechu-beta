@@ -2,9 +2,10 @@ package  com.inertiamobility.meechu;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class User {
+public class User implements Serializable {
     @SerializedName("id")
     @Expose
     private String id;
@@ -40,6 +41,7 @@ public class User {
     @SerializedName("avatar")
     @Expose
     private String avatar;
+
 
     public String getId() {
         return id;

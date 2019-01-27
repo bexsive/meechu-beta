@@ -1,10 +1,13 @@
 package  com.inertiamobility.meechu;
 
 
+import com.google.gson.JsonObject;
+
 import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
+import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
@@ -26,8 +29,6 @@ public interface Api {
     @GET("api/v1/events")
     Call<EventList> getEvents(@Query("user_id") String params);
 
-    //@GET("api/v1/events/?user_id={params}")
-    //Call<EventList> getEvents(@Path("params") String params);
 
     @POST("api/v1/sessions")
     Call<User> login(
@@ -43,4 +44,12 @@ public interface Api {
     Call<User> updateUser(
             @HeaderMap Map<String, String> headers,
             @Body User user);
+
+    @GET("api/v1/users")
+    Call<JsonObject> findUser(@Query("phone_number") String params );
+
+    @GET("api/v1/users")
+    Call<ResponseUser> findUsers(@Query("phone_number") String params );
+
+
 }
