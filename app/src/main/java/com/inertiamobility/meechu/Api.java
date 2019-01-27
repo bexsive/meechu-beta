@@ -46,10 +46,11 @@ public interface Api {
             @Body User user);
 
     @GET("api/v1/users")
-    Call<JsonObject> findUser(@Query("phone_number") String params );
-
-    @GET("api/v1/users")
     Call<ResponseUser> findUsers(@Query("phone_number") String params );
+
+    //Follow status
+    @GET("api/v1/followStatus")
+    Call<JsonObject> followStatus(@Query("user_id") String params, @Query(value = "user_id_passive") String params2 );
 
 
 }

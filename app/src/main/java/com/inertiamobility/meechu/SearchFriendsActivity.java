@@ -54,10 +54,6 @@ public class SearchFriendsActivity extends AppCompatActivity {
                     public void onResponse(Call<ResponseUser> call, Response<ResponseUser> response) {
 
                         ResponseUser responseUser = response.body();
-
-                        Log.d(TAG, "Data Check " + responseUser.user.getFirstName());
-                        Log.d(TAG, "Data Check " + responseUser.user.getLastName());
-                        Log.d(TAG, "Data Check " + responseUser.user.getId());
                         // Start new activity passing User Info
                         Intent intent = new Intent(getApplicationContext(), ProfileActivity.class);
                         Bundle bundle = new Bundle();
