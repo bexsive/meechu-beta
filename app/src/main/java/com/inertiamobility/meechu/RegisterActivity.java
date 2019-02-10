@@ -34,6 +34,7 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
+        newUser = new User();
         firstName = findViewById(R.id.reg_first_name);
         lastName = findViewById(R.id.reg_last_name);
         phoneNumber = findViewById(R.id.reg_number);

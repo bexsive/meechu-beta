@@ -1,5 +1,7 @@
 package  com.inertiamobility.meechu;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
@@ -27,8 +29,8 @@ public class EventsFragment extends Fragment {
     List<Event> events = new ArrayList<>();
     SwipeRefreshLayout refreshLayout;
 
-   // private SharedPreferenceConfig preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
-    String userID = "1";
+    private SharedPreferenceConfig preferenceConfig;
+    String userID;
 
     public EventsFragment() {
         // Required empty public constructor
@@ -38,6 +40,8 @@ public class EventsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_events, container, false);
+
+        preferenceConfig = new SharedPreferenceConfig(this.getActivity().getApplicationContext());
 
         final RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         final RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), events);
@@ -82,6 +86,7 @@ public class EventsFragment extends Fragment {
         Api api = retrofit.create(Api.class);
 
         //TODO: pull user_id from shared preferences object
+        userID = String.valueOf(preferenceConfig.readUserId());
         Call<EventList> call = api.getEvents(userID);
 
         call.enqueue(new Callback<EventList>() {
