@@ -13,7 +13,9 @@
     <string name="prompt_password">Password</string>
     <string name="login_btn_label">Login</string>
     <string name="sign_up_text">New User? SignUp</string>
-    <string name="prompt_name">Name</string>
+    <string name="prompt_first_name">First Name</string>
+    <string name="prompt_last_name">Last Name</string>
+    <string name="prompt_number">Phone Number</string>
     <string name="prompt_con_password">Confirm Password</string>
     <string name="reg_bn_label">Register</string>
 

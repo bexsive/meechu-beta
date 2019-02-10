@@ -23,7 +23,7 @@ public class RegisterActivity extends AppCompatActivity {
     private static final String TAG = "RegisterActivity";
     private SharedPreferenceConfig preferenceConfig;
 
-    EditText Name, Email, Pass, ConPass;
+    EditText firstName, lastName, phoneNumber, email, pass, conPass;
     Button reg_button;
     User newUser;
 
@@ -34,10 +34,12 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        Name = findViewById(R.id.reg_name);
-        Email = findViewById(R.id.reg_email);
-        Pass = findViewById(R.id.reg_password);
-        ConPass = findViewById(R.id.reg_con_password);
+        firstName = findViewById(R.id.reg_first_name);
+        lastName = findViewById(R.id.reg_last_name);
+        phoneNumber = findViewById(R.id.reg_number);
+        email = findViewById(R.id.reg_email);
+        pass = findViewById(R.id.reg_password);
+        conPass = findViewById(R.id.reg_con_password);
 
         preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
 
@@ -46,12 +48,7 @@ public class RegisterActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                newUser.setFirstName(Name.getText().toString());
-                newUser.setEmail(Email.getText().toString());
-                newUser.setPassword(Pass.getText().toString());
-                newUser.setPasswordConfirmation(ConPass.getText().toString());
-
-                if (Name.getText().toString().equals("") || Email.getText().toString().equals("") || Pass.getText().toString().equals("")){
+                if (firstName.getText().toString().equals("") || lastName.getText().toString().equals("") || phoneNumber.getText().toString().equals("") || email.getText().toString().equals("") || pass.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
                     builder.setMessage("Please fill all fields");
@@ -65,7 +62,7 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                 }
-                else if (!(Pass.getText().toString().equals(ConPass.getText().toString()))){
+                else if (!(pass.getText().toString().equals(conPass.getText().toString()))){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
                     builder.setMessage("Your passwords are not matching");
@@ -73,8 +70,8 @@ public class RegisterActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
-                            Pass.setText("");
-                            ConPass.setText("");
+                            pass.setText("");
+                            conPass.setText("");
                         }
                     });
                     AlertDialog alertDialog = builder.create();
@@ -82,6 +79,13 @@ public class RegisterActivity extends AppCompatActivity {
                 }
 
                 else{
+
+                        newUser.setFirstName(firstName.getText().toString());
+                        newUser.setLastName(lastName.getText().toString());
+                        newUser.setPhoneNumber(phoneNumber.getText().toString());
+                        newUser.setEmail(email.getText().toString());
+                        newUser.setPassword(pass.getText().toString());
+                        newUser.setPasswordConfirmation(conPass.getText().toString());
 
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl(Api.BASE_URL)
@@ -100,15 +104,14 @@ public class RegisterActivity extends AppCompatActivity {
 
                             Log.d(TAG, "onResponse: Server Response: " + response.toString());
 
-                            newUser.setId(response.body().getId());
-                            Toast.makeText(RegisterActivity.this, "Response" + newUser.getId(), Toast.LENGTH_LONG).show();
-                            if (newUser.getEmail() == response.body().getEmail())
-
+                            if (newUser.getEmail().equals(response.body().getEmail()))
+                                newUser.setId(response.body().getId());
+                                Toast.makeText(RegisterActivity.this, "Response" + newUser.getId(), Toast.LENGTH_LONG).show();
                                 preferenceConfig.writeLoginStatus(true);
                                 preferenceConfig.writeUserId(Integer.parseInt(newUser.getId()));
 
                                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
-
+                                finish();
                         }
 
                         @Override
@@ -118,8 +121,6 @@ public class RegisterActivity extends AppCompatActivity {
                         }
                     });
                 }
-
-
             }
         });
     }

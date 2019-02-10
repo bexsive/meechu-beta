@@ -2,11 +2,8 @@ apply plugin: 'com.android.application'
 
 android {
     signingConfigs {
-        config {
-            keyAlias 'meechu_cert'
-            keyPassword 'Encryption5!'
-            storeFile file('C:/Users/Matthew/Desktop/Meechu/Meechu_cert')
-            storePassword 'Encryption5!'
+        Meechu_Cert {
+            keyAlias 'key0'
         }
     }
     compileSdkVersion 28
@@ -14,8 +11,8 @@ android {
         applicationId "com.inertiamobility.meechu"
         minSdkVersion 19
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode 3
+        versionName "3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
