@@ -12,21 +12,31 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
     }
 
     @Override
-    public Fragment getItem(int i) {
+    public Fragment getItem(int position) {
         // TODO: Switch statment for each tab/Fragment
+        switch (position) {
+            case 0:
+                return new EventsFragment();
+            case 1:
+                return new SearchFriendsFragment();
 
-        if (i == 0){
-            EventsFragment eventsFragment = new EventsFragment();
-            return eventsFragment;
+            case 2:
+                DemoFragment demoFragment = new DemoFragment();
+                Bundle bundle = new Bundle();
+                bundle.putString("message", "Fragment :" + position);
+                demoFragment.setArguments(bundle);
+                return demoFragment;
+
+            case 3:
+                DemoFragment demoFragment2 = new DemoFragment();
+                Bundle bundle2 = new Bundle();
+                bundle2.putString("message", "Fragment :" + position);
+                demoFragment2.setArguments(bundle2);
+                return demoFragment2;
+
+            default:
+                return new EventsFragment();
         }
-
-        DemoFragment demoFragment = new DemoFragment();
-        i = i +1;
-        Bundle bundle = new Bundle();
-        bundle.putString("message", "Fragment :" + i);
-        demoFragment.setArguments(bundle);
-
-        return demoFragment;
     }
 
     @Override
@@ -43,7 +53,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
                 title = "Events";
                 break;
             case 1:
-                title = "Alerts";
+                title = "Friends";
                 break;
 
             case 2:

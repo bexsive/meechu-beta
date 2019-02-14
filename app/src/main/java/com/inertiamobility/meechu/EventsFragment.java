@@ -1,20 +1,21 @@
 package  com.inertiamobility.meechu;
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -23,7 +24,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class EventsFragment extends Fragment {
-
+    private static final String TAG = "EventsFragment";
 
     FloatingActionButton fab;
     List<Event> events = new ArrayList<>();
@@ -43,17 +44,21 @@ public class EventsFragment extends Fragment {
 
         preferenceConfig = new SharedPreferenceConfig(this.getActivity().getApplicationContext());
 
+        updateList();
         final RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
         final RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), events);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        adapter.notifyDataSetChanged();
+
         refreshLayout = view.findViewById(R.id.swipeRefresh);
+
+        refreshLayout.setRefreshing(false);
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
                 updateList();
-                // Used to do this on success in API call.
                 adapter.notifyDataSetChanged();
                 refreshLayout.setRefreshing(false);
             }
@@ -68,11 +73,17 @@ public class EventsFragment extends Fragment {
             }
         });
 
-        //Refresh events list
+        // Refresh events list
         updateList();
-        adapter.notifyDataSetChanged();
-        refreshLayout.setRefreshing(false);
-
+        //This might not be the most elegant way to do this.  UI thread hard wait. But it works :/
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                adapter.notifyDataSetChanged();
+                refreshLayout.setRefreshing(false);
+            }
+        }, 100);
         return view;
     }
 
@@ -85,7 +96,7 @@ public class EventsFragment extends Fragment {
 
         Api api = retrofit.create(Api.class);
 
-        //TODO: pull user_id from shared preferences object
+        //pull user_id from shared preferences object
         userID = String.valueOf(preferenceConfig.readUserId());
         Call<EventList> call = api.getEvents(userID);
 
@@ -97,6 +108,7 @@ public class EventsFragment extends Fragment {
                 for (int i = 0; i < eventList.events.size(); i++){
                     events.add(eventList.events.get(i));
                 }
+
             }
             @Override
             public void onFailure(Call<EventList> call, Throwable t) {

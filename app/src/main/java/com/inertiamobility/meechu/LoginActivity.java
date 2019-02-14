@@ -33,6 +33,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+        user = new User();
         Email = findViewById(R.id.email);
         Pass = findViewById(R.id.password);
         signup_text = findViewById(R.id.sign_up);
@@ -45,8 +46,6 @@ public class LoginActivity extends AppCompatActivity {
         if (preferenceConfig.readLoginStatus()){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
         }
-        //editor.putInt("your_int_key", yourIntValue);
-        //editor.apply();
 
         login_button = findViewById(R.id.login_button);
         login_button.setOnClickListener(new View.OnClickListener() {
@@ -96,7 +95,7 @@ public class LoginActivity extends AppCompatActivity {
                             preferenceConfig.writeUserId(Integer.parseInt(user.getId()));
 
                             startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
+                            finish();
                         }
 
                         @Override

@@ -37,7 +37,7 @@
             android:name=".ProfileActivity"
             android:label="@string/title_activity_profile" />
 
-        <activity android:name=".SearchFriendsActivity"
+        <activity android:name=".SearchFriendsFragment"
                 android:label="SearchFriendsActivity"/>
 
         <meta-data

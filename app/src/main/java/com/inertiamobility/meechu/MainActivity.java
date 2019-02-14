@@ -11,7 +11,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -65,7 +64,8 @@ public class MainActivity extends AppCompatActivity {
                 switch(menuItem.getItemId()){
 
                     case R.id.navigation_item_social_circles:
-                        startActivity(new Intent(getApplicationContext(), SearchFriendsActivity.class));
+                        //TODO: Start list activity for assigning friends for social circles (see twitter)
+                        //startActivity(new Intent(getApplicationContext(), SearchFriendsFragment.class));
 
                         drawerLayout.closeDrawers();
                         return true;
