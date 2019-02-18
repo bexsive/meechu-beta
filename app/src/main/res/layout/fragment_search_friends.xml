@@ -23,5 +23,13 @@
         android:id="@+id/search_button"
         android:layout_below="@+id/search_bar"
         />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Check phone contacts"
+        android:id="@+id/contacts_search_button"
+        android:layout_below="@+id/search_button"
+        />
 </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
