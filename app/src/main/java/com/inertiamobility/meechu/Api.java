@@ -3,17 +3,15 @@ package  com.inertiamobility.meechu;
 
 import com.google.gson.JsonObject;
 
+import java.util.List;
 import java.util.Map;
 
 import okhttp3.ResponseBody;
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
-import retrofit2.http.PUT;
-import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 
@@ -40,10 +38,10 @@ public interface Api {
             @HeaderMap Map<String, String> headers,
             @Body User user);
 
-    @PUT("api/v1/users")
-    Call<User> updateUser(
-            @HeaderMap Map<String, String> headers,
-            @Body User user);
+    //@PUT("api/v1/users")
+    //Call<User> updateUser(
+    //        @HeaderMap Map<String, String> headers,
+    //        @Body User user);
 
     @GET("api/v1/users")
     Call<ResponseUser> findUsers(@Query("phone_number") String params );
@@ -51,6 +49,10 @@ public interface Api {
     //Follow status
     @GET("api/v1/followStatus")
     Call<JsonObject> followStatus(@Query("user_id") String params, @Query(value = "user_id_passive") String params2 );
+
+    //addContacts (From phone contacts list)
+    @GET("api/v1/addContacts")
+    Call<UserList> addContacts(@Query("user_id") String params, @Query(value = "numbers[]") List<String> params2);
 
 
 }

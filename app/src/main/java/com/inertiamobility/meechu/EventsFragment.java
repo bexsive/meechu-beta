@@ -14,8 +14,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -44,13 +42,10 @@ public class EventsFragment extends Fragment {
 
         preferenceConfig = new SharedPreferenceConfig(this.getActivity().getApplicationContext());
 
-        updateList();
         final RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
-        final RecyclerViewAdapter adapter = new RecyclerViewAdapter(getContext(), events);
+        final EventRecyclerViewAdapter adapter = new EventRecyclerViewAdapter(getContext(), events);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        adapter.notifyDataSetChanged();
 
         refreshLayout = view.findViewById(R.id.swipeRefresh);
 
@@ -76,6 +71,7 @@ public class EventsFragment extends Fragment {
         // Refresh events list
         updateList();
         //This might not be the most elegant way to do this.  UI thread hard wait. But it works :/
+        //TODO: Loading screen a-la twitter while this loads
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
@@ -83,7 +79,7 @@ public class EventsFragment extends Fragment {
                 adapter.notifyDataSetChanged();
                 refreshLayout.setRefreshing(false);
             }
-        }, 100);
+        }, 1000);
         return view;
     }
 
@@ -108,7 +104,6 @@ public class EventsFragment extends Fragment {
                 for (int i = 0; i < eventList.events.size(); i++){
                     events.add(eventList.events.get(i));
                 }
-
             }
             @Override
             public void onFailure(Call<EventList> call, Throwable t) {

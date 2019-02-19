@@ -1,12 +1,19 @@
 package com.inertiamobility.meechu;
 
+
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.Handler;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,12 +31,22 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+import static android.Manifest.permission.*;
+import static android.content.pm.PackageManager.*;
+
 public class SearchFriendsFragment extends Fragment {
 
     EditText searchBar;
     Button searchButton, contactsSearchButton;
     Context context;
     private static final String TAG = "SearchFriendsFragment";
+    UserRecyclerViewAdapter adapter;
+
+    //Contacts from Phone
+    List<User> users = new ArrayList<>();
+    private SharedPreferenceConfig preferenceConfig;
+    String userID;
+
 
     public SearchFriendsFragment() {
         // Required empty public constructor
@@ -44,51 +61,83 @@ public class SearchFriendsFragment extends Fragment {
             searchButton = view.findViewById(R.id.search_button);
             contactsSearchButton = view.findViewById(R.id.contacts_search_button);
 
+        final RecyclerView recyclerView = view.findViewById(R.id.recycler_view);
+        adapter = new UserRecyclerViewAdapter(getContext(), users);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        adapter.notifyDataSetChanged();
 
+        preferenceConfig = new SharedPreferenceConfig(context);
 
-            searchButton.setOnClickListener(new View.OnClickListener() {
+        searchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    String number = searchBar.getText().toString();
 
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl(Api.BASE_URL)
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
+                    if ( number.length() == 10){
+                        Retrofit retrofit = new Retrofit.Builder()
+                                .baseUrl(Api.BASE_URL)
+                                .addConverterFactory(GsonConverterFactory.create())
+                                .build();
 
-                    Api api = retrofit.create(Api.class);
-                    Call<ResponseUser> call = api.findUsers(searchBar.getText().toString());
-                    call.enqueue(new Callback<ResponseUser>() {
-                        @Override
-                        public void onResponse(Call<ResponseUser> call, Response<ResponseUser> response) {
+                        Api api = retrofit.create(Api.class);
+                        Call<ResponseUser> call = api.findUsers(searchBar.getText().toString());
+                        call.enqueue(new Callback<ResponseUser>() {
+                            @Override
+                            public void onResponse(Call<ResponseUser> call, Response<ResponseUser> response) {
 
-                            ResponseUser responseUser = response.body();
-                            // Start new activity passing User Info
-                            Intent intent = new Intent(context, ProfileActivity.class);
-                            Bundle bundle = new Bundle();
-                            bundle.putString("first_name", responseUser.user.getFirstName());
-                            bundle.putString("last_name", responseUser.user.getLastName());
-                            bundle.putString("ID", responseUser.user.getId());
-                            intent.putExtras(bundle);
-                            startActivity(intent);
+                                //TODO: Exception handling for no matches
+                                ResponseUser responseUser = response.body();
+                                // Start new activity passing User Info
+                                if (responseUser.user == null){
+                                    Toast.makeText(context, "Didn't find anyone", Toast.LENGTH_LONG).show();
+                                }
+                                else {
+                                    Intent intent = new Intent(context, ProfileActivity.class);
+                                    Bundle bundle = new Bundle();
+                                    bundle.putString("first_name", responseUser.user.getFirstName());
+                                    bundle.putString("last_name", responseUser.user.getLastName());
+                                    bundle.putString("ID", responseUser.user.getId());
+                                    intent.putExtras(bundle);
+                                    startActivity(intent);
+                                }
+                            }
 
-                        }
-
-                        @Override
-                        public void onFailure(Call<ResponseUser> call, Throwable t) {
-                            //Testing
-                            Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_LONG).show();
+                            @Override
+                            public void onFailure(Call<ResponseUser> call, Throwable t) {
+                                //Testing
+                                Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_LONG).show();
 
 
-                        }
-                    });
+                            }
+                        });
+                    }
+                    else {
+                        Toast.makeText(getContext(), "Number should be 10 digits", Toast.LENGTH_LONG).show();
+                    }
                 }
             });
 
             contactsSearchButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    if (ContextCompat.checkSelfPermission(context,
+                            READ_CONTACTS)
+                            != PERMISSION_GRANTED) {
 
-                    get_Contacts();
+                        requestPermissions(new String[]{READ_CONTACTS}, 1);
+
+                    } else {
+                        // Permission has already been granted
+                        updateList(get_Contacts());
+                        final Handler handler = new Handler();
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                adapter.notifyDataSetChanged();
+                            }
+                        }, 1000);
+                    }
 
                 }
             });
@@ -96,56 +145,13 @@ public class SearchFriendsFragment extends Fragment {
         return view;
     }
 
-    public void get_Contacts(){
-//        ArrayList<AndroidContact> contactArrayList = new ArrayList<AndroidContact>();
-//
-//        Cursor cursor = null;
-//        ContentResolver contentResolver = getActivity().getContentResolver();
-//        cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
-//        if (cursor.getCount() > 0 ) {
-//            while (cursor.moveToNext()) {
-//                AndroidContact androidContact = new AndroidContact();
-//                String contact_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
-//                String contact_display_name = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-//
-//                androidContact.android_Contact_Name = contact_display_name;
-//
-//                int hasPhoneNumber = Integer.parseInt(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER)));
-//                if (hasPhoneNumber > 0 ) {
-//                    Cursor phoneCursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-//                            , null
-//                            , ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = ?"
-//                            , new String[]{contact_id}
-//                            , null);
-//                    while (phoneCursor.moveToNext()) {
-//                        String phoneNumber = phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-//                        androidContact.android_Contact_phoneNumber = phoneNumber;
-//                    }
-//                    phoneCursor.close();
-//                }
-//
-//                contactArrayList.add(androidContact);
-//            }
-//        }
-//        cursor.close();
-//        if (contactArrayList.size() > 0) {
-//            for (int i = 0; i < contactArrayList.size(); i++){
-//                Log.d(TAG, contactArrayList.get(i).android_Contact_Name + ": " + contactArrayList.get(i).android_Contact_phoneNumber);
-//            }
-//        }
-//
-//        if (contactArrayList.size() > 0) {
-//            for (int i = 0; i < contactArrayList.size(); i++){
-//                Log.d(TAG, contactArrayList.get(i).android_Contact_Name + ": " + contactArrayList.get(i).android_Contact_phoneNumber);
-//            }
-//        }
+    public List<String> get_Contacts(){
 
-        //Phone Numbers Only
-        List<String> number = new ArrayList<String>();
+        //TODO:  Check contacts permissions
+        List<String> numbers = new ArrayList<>();
 
-        Cursor cursor = null;
         ContentResolver contentResolver = getActivity().getContentResolver();
-        cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
+        Cursor cursor = contentResolver.query(ContactsContract.Contacts.CONTENT_URI, null, null, null, null, null);
         if (cursor.getCount() > 0 ) {
             while (cursor.moveToNext()) {
                 String contact_id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
@@ -157,8 +163,8 @@ public class SearchFriendsFragment extends Fragment {
                             , new String[]{contact_id}
                             , null);
                     while (phoneCursor.moveToNext()) {
-                        number.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)));
-
+                        numbers.add(phoneCursor.getString(phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)).replaceAll("\\D+", ""));
+                        if (numbers.size() > 10) break;
                     }
                     phoneCursor.close();
                 }
@@ -166,25 +172,73 @@ public class SearchFriendsFragment extends Fragment {
         }
         cursor.close();
 
-        if (number.size() > 0) {
-            for (int i = 0; i < number.size(); i++){
-                Log.d(TAG, number.get(i));
+        //TODO: Filter list better in the future..IE if 11 chars, check if first is "1" (US nation code)
+        List<String> result = new ArrayList<>();
+        for (String number: numbers) {
+            if (number.length() == 10) {
+                result.add(number);
             }
         }
-
+        Log.d(TAG, "get_Contacts: " + result);
+        return result;
     }
-    public class AndroidContact {
-        public String android_Contact_Name = "";
-        public String android_Contact_phoneNumber = "";
-        public int android_contact_ID = 0;
 
-        public AndroidContact(String android_Contact_Name, String android_Contact_phoneNumber, int android_contact_ID) {
-            this.android_Contact_Name = android_Contact_Name;
-            this.android_Contact_phoneNumber = android_Contact_phoneNumber;
-            this.android_contact_ID = android_contact_ID;
-        }
+    public void updateList(List<String> numbers){
 
-        public AndroidContact() {
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(Api.BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        Api api = retrofit.create(Api.class);
+
+        //pull user_id from shared preferences object
+        userID = String.valueOf(preferenceConfig.readUserId());
+        Log.d(TAG, userID);
+        Call<UserList> call = api.addContacts(userID, numbers);
+
+        call.enqueue(new Callback<UserList>() {
+            @Override
+            public void onResponse(Call<UserList> call, Response<UserList> response) {
+                UserList userList = response.body();
+                users.clear();
+                if (userList.users.size() == 0){
+                    Toast.makeText(getContext(), "No new Users :/", Toast.LENGTH_LONG).show();
+                }
+                else {
+                    for (int i = 0; i < userList.users.size(); i++) {
+                        users.add(userList.users.get(i));
+                    }
+                }
+            }
+            @Override
+            public void onFailure(Call<UserList> call, Throwable t) {
+                Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+              switch (requestCode) {
+            case 1: {
+
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                    updateList(get_Contacts());
+                    final Handler handler = new Handler();
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            adapter.notifyDataSetChanged();
+                        }
+                    }, 1000);
+                }
+                else {
+                    Toast.makeText(context, "Permission denied to read your Contacts", Toast.LENGTH_SHORT).show();
+                }
+            }
         }
     }
 }

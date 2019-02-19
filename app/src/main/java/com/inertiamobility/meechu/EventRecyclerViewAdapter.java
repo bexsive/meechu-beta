@@ -17,19 +17,18 @@ import java.util.Locale;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder> {
-    private static final String TAG = "RecyclerViewAdapter";
+public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecyclerViewAdapter.ViewHolder> {
+    private static final String TAG = "EventRecyclerViewAdapter";
 
     private List<Event> events;
     private Context mContext;
-
 
     SharedPreferenceConfig preferenceConfig;
 
     //Date-Time format
     DateFormat dateFormat;
 
-    public RecyclerViewAdapter(Context mContext, List<Event> events) {
+    public EventRecyclerViewAdapter(Context mContext, List<Event> events) {
         this.events = events;
         this.mContext = mContext;
     }

@@ -39,12 +39,10 @@ public class LoginActivity extends AppCompatActivity {
         signup_text = findViewById(R.id.sign_up);
         preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
 
-
-
-
         //TODO: Re-Do this with new shared Preferences
         if (preferenceConfig.readLoginStatus()){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
+            finish();
         }
 
         login_button = findViewById(R.id.login_button);
@@ -112,6 +110,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));
+                finish();
             }
         });
     }
