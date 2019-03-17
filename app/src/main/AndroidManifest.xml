@@ -36,6 +36,9 @@
         <activity
             android:name=".ProfileActivity"
             android:label="@string/title_activity_profile" />
+        <activity
+            android:name=".EventActivity"
+            android:label="@string/title_activity_event" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

@@ -1,5 +1,7 @@
 package  com.inertiamobility.meechu;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
@@ -68,7 +70,17 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(mContext, events.get(position).getName(), Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(mContext, EventActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("event_id", events.get(position).getId());
+                bundle.putString("event_name", events.get(position).getName());
+                bundle.putString("venue_name", events.get(position).getVenueName());
+                bundle.putString("start_time", events.get(position).getStartTime());
+                bundle.putString("lat", events.get(position).getLat());
+                bundle.putString("lng", events.get(position).getLng());
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
+
             }
         });
     }

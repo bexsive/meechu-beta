@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:padding="15dp"
+    android:id="@+id/parent_layout">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/eventNameText"
+        android:text="Placeholder eventNameText"
+        android:textAlignment="center"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/venueNameText"
+        android:text="Placeholder venueNameText"
+        android:textAlignment="center"
+        android:layout_below="@+id/eventNameText"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/startTimeText"
+        android:text="Placeholder startTimeText"
+        android:textAlignment="center"
+        android:layout_below="@+id/venueNameText"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/distanceAwayText"
+        android:text="Placeholder distanceAwayText"
+        android:textAlignment="center"
+        android:layout_below="@id/startTimeText"
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/attendingButton"
+        android:layout_below="@+id/distanceAwayText"
+        android:text="Button Text- Attending"
+
+        />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/maybeButton"
+        android:layout_below="@+id/distanceAwayText"
+        android:layout_toEndOf="@+id/attendingButton"
+        android:text="Button Text- Maybe"
+
+        />
+</RelativeLayout>

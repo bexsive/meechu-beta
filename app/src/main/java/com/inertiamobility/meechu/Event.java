@@ -6,6 +6,9 @@ import java.io.Serializable;
 
 public class Event implements Serializable {
 
+    @SerializedName("id")
+    @Expose
+    private String id;
     @SerializedName("name")
     @Expose
     private String name;
@@ -27,6 +30,14 @@ public class Event implements Serializable {
     @SerializedName("lng")
     @Expose
     private String lng;
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

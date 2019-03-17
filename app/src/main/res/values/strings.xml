@@ -33,6 +33,7 @@
     <string name="title_activity_build_event">BuildEventActivity</string>
 
     <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_event">EventActivity</string>
 
     <!-- Shared Preferences test -->
     <string name="PREF_FILE">com.example.matthew.meechu_APP_PREF_FILE</string>
