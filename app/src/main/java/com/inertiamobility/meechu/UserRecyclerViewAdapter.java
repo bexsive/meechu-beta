@@ -1,5 +1,7 @@
 package com.inertiamobility.meechu;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,8 +45,14 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO: Launch profile page
-                Toast.makeText(mContext, users.get(position).getFirstName(), Toast.LENGTH_SHORT).show();
+
+                Intent intent = new Intent(mContext, ProfileActivity.class);
+                Bundle bundle = new Bundle();
+                bundle.putString("ID", users.get(position).getId());
+                bundle.putString("first_name", users.get(position).getFirstName());
+                bundle.putString("last_name", users.get(position).getLastName());
+                intent.putExtras(bundle);
+                mContext.startActivity(intent);
             }
         });
     }

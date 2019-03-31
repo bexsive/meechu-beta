@@ -77,11 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void displayMessage(String message){
-
-        Toast.makeText(this, message , Toast.LENGTH_SHORT).show();
-    }
-
     void setLatLong(){
         client = LocationServices.getFusedLocationProviderClient(this);
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

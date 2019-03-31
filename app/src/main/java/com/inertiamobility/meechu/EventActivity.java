@@ -1,15 +1,26 @@
 package com.inertiamobility.meechu;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.gson.JsonObject;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
+import java.util.Locale;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -20,14 +31,17 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class EventActivity extends AppCompatActivity {
 
     public static String TAG = "EventActivity";
-    TextView eventNameText, venueNameText, startTimeText, distanceAwayText;
-    Button attendingButton, maybeButton;
+    TextView eventNameText, venueNameText, startTimeText, distanceAwayText, attendingText;
+    Button attendingButton, maybeButton, leaveButton;
 
     Event event;
     EventParticipant eventParticipant;
 
     SharedPreferenceConfig preferenceConfig;
     Boolean isChecked, isNew;
+
+    //Date-Time format
+    DateFormat dateFormat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +52,11 @@ public class EventActivity extends AppCompatActivity {
         venueNameText = findViewById(R.id.venueNameText);
         startTimeText = findViewById(R.id.startTimeText);
         distanceAwayText = findViewById(R.id.distanceAwayText);
+        attendingText = findViewById(R.id.attendingText);
 
         attendingButton = findViewById(R.id.attendingButton);
         maybeButton = findViewById(R.id.maybeButton);
+        leaveButton = findViewById(R.id.leaveButton);
 
         Bundle bundle = getIntent().getExtras();
 
@@ -54,16 +70,19 @@ public class EventActivity extends AppCompatActivity {
 
         eventNameText.setText(event.getName());
         venueNameText.setText(event.getVenueName());
-        startTimeText.setText(event.getStartTime());
+
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
+        try {
+            startTimeText.setText(DateUtils.getRelativeTimeSpanString(dateFormat.parse(event.getStartTime()).getTime(), System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
 
         preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
         distanceAwayText.setText(String.format("%.0f", haversine_mi(
                 preferenceConfig.readUserLat(),
                 preferenceConfig.readUserLng(), Double.valueOf(event.getLat()), Double.valueOf(event.getLng()))) + " Miles Away");
 
-        // TODO: Check the attending status of this user to that event.
-        //On result, change the button titles and going/not going/maybe going status
-        // Then, build relevant eventParticipant object to reflect the needs based on the button selection
         isChecked = Boolean.FALSE;
         //Set Default
         isNew = Boolean.FALSE;
@@ -71,14 +90,6 @@ public class EventActivity extends AppCompatActivity {
 
         checkAttendance();
 
-        maybeButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                eventParticipant.setAttending("false");
-                updateStatus(isNew);
-
-            }
-        });
         attendingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -88,6 +99,26 @@ public class EventActivity extends AppCompatActivity {
 
             }
         });
+
+
+        maybeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                eventParticipant.setAttending("false");
+                updateStatus(isNew);
+
+            }
+        });
+
+        leaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO: pop-up are you sure, then logic to check if anyone else is going, and delete event or pass admin permissions to next attendee (If none are already set)
+                Toast.makeText(getApplicationContext(), "Can't delete events yet, upgrades coming", Toast.LENGTH_LONG).show();
+            }
+        });
+
     }
 
     double haversine_mi(double lat1, double long1, double lat2, double long2) {
@@ -126,6 +157,9 @@ public class EventActivity extends AppCompatActivity {
                     eventParticipant.setCreator("false");
                     eventParticipant.setAdmin("false");
 
+                    //Change button text
+                    attendingText.setText("Not Going");
+
                 }
                 else {
                     eventParticipant.setUserId(responseEventParticipant.eventParticipant.getUserId());
@@ -134,6 +168,22 @@ public class EventActivity extends AppCompatActivity {
                     eventParticipant.setCreator(responseEventParticipant.eventParticipant.getCreator());
                     eventParticipant.setAdmin(responseEventParticipant.eventParticipant.getAdmin());
                     eventParticipant.setId(responseEventParticipant.eventParticipant.getId());
+
+                    //Change button visibility
+                    if ("True".equals(eventParticipant.getAttending())){
+
+                        attendingText.setText("Attending");
+                        attendingButton.setVisibility(View.GONE);
+                        maybeButton.setVisibility(View.VISIBLE);
+                        leaveButton.setVisibility(View.VISIBLE);
+                    }
+                    else{
+                        attendingText.setText("Maybe Attending");
+                        attendingButton.setVisibility(View.VISIBLE);
+                        maybeButton.setVisibility(View.GONE);
+                        leaveButton.setVisibility(View.VISIBLE);
+
+                    }
                 }
             }
 
@@ -143,10 +193,9 @@ public class EventActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
-    void updateStatus(Boolean isNew){
+    void updateStatus(final Boolean isNew){
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
@@ -156,57 +205,92 @@ public class EventActivity extends AppCompatActivity {
         if (isNew){
             //Create
             Api api = retrofit.create(Api.class);
-            HashMap<String, String> headerMap = new HashMap<String, String>();
+            HashMap<String, String> headerMap = new HashMap<>();
             headerMap.put("Content-Type", "application/json");
 
-            Call<ResponseBody> call = api.postEventParticipant(headerMap,
+            Call<JsonObject> call = api.postEventParticipant(headerMap,
                     eventParticipant );
-            call.enqueue(new Callback<ResponseBody>() {
+            call.enqueue(new Callback<JsonObject>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 
-                    try {
-                        Log.d(TAG, "isNew post response:");
-                        String json = response.body().toString();
-                        Log.d(TAG, "onResponse: json: " + json);
-                        JSONObject data = new JSONObject(json);
-                    }catch (JSONException e){
-                        Log.e(TAG, "onResponse: JSONException: " + e.getMessage() );
+                    JsonObject responseMessage = response.body();
+                    Log.d(TAG, "edit onResponse: json: " + responseMessage.get("message").toString());
+
+                    if (("Attending Event").equals(responseMessage.get("message").toString().replace("\"", ""))) {
+
+                        //Update Event Attending
+                        eventParticipant.setAttending("true");
+
+                        //Update text and button visibility
+                        attendingText.setText("Attending");
+                        attendingButton.setVisibility(View.GONE);
+                        maybeButton.setVisibility(View.VISIBLE);
+                        leaveButton.setVisibility(View.VISIBLE);
+
+                    }
+                    else {
+                        //Update Event Maybe
+                        eventParticipant.setAttending("false");
+
+                        //Update text and button visibility
+                        attendingText.setText("Maybe Attending");
+                        attendingButton.setVisibility(View.VISIBLE);
+                        maybeButton.setVisibility(View.GONE);
+                        leaveButton.setVisibility(View.VISIBLE);
+
                     }
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<JsonObject> call, Throwable t) {
                     //Testing
                     Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
                 }
             });
-
         }
         else{
             //Edit
             Api api = retrofit.create(Api.class);
-            HashMap<String, String> headerMap = new HashMap<String, String>();
+            HashMap<String, String> headerMap = new HashMap<>();
             headerMap.put("Content-Type", "application/json");
 
-            Call<ResponseBody> call = api.changeAttendance(eventParticipant.getId(),
+            Call<JsonObject> call = api.editAttendance(eventParticipant.getId(),
                     eventParticipant.getAttending());
-            call.enqueue(new Callback<ResponseBody>() {
+            call.enqueue(new Callback<JsonObject>() {
                 @Override
-                public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
 
-                    try {
-                        Log.d(TAG, "isNew edit response:");
-                        String json = response.body().toString();
-                        Log.d(TAG, "onResponse: json: " + json);
-                        JSONObject data = new JSONObject(json);
-                    }catch (JSONException e){
-                        Log.e(TAG, "onResponse: JSONException: " + e.getMessage() );
+                    JsonObject responseMessage = response.body();
+                    Log.d(TAG, "edit onResponse: json: " + responseMessage.get("message").toString());
+
+                    if (("Attending Event").equals(responseMessage.get("message").toString().replace("\"", ""))) {
+
+                        //Update Event
+                        eventParticipant.setAttending("true");
+
+                        //Update text and button visibility
+                        attendingText.setText("Attending");
+                        attendingButton.setVisibility(View.GONE);
+                        maybeButton.setVisibility(View.VISIBLE);
+                        leaveButton.setVisibility(View.VISIBLE);
+
+                    }
+                    else {
+                        //Update Event
+                        eventParticipant.setAttending("false");
+
+                        //Update text and button visibility
+                        attendingText.setText("Maybe Attending");
+                        attendingButton.setVisibility(View.VISIBLE);
+                        maybeButton.setVisibility(View.GONE);
+                        leaveButton.setVisibility(View.VISIBLE);
+
                     }
                 }
 
                 @Override
-                public void onFailure(Call<ResponseBody> call, Throwable t) {
+                public void onFailure(Call<JsonObject> call, Throwable t) {
                     //Testing
                     Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
                 }
@@ -214,13 +298,3 @@ public class EventActivity extends AppCompatActivity {
         }
     }
 }
-
-//TODO:
-//On loading, check the event for users that you are following, and total attendees to event.
-// Users that you are following, list them below the event somehow(User id{as a reference}, name, profile picture)
-//If you are attending, build an EventParticipant object from the call, and populate buttons
-//If you aren't attending
-
-//DONE
-//Also, check your status on the event (If event_participant exists, and if so the data)
-

@@ -61,15 +61,13 @@ public interface Api {
 
     //createParticipant
     @POST("api/v1/event_participants")
-    Call<ResponseBody> postEventParticipant(
+    Call<JsonObject> postEventParticipant(
             @HeaderMap Map<String, String> headers,
             @Body EventParticipant eventParticipant);
 
     //editParticipant
-    @GET("api/v1/event_participants")
-
-    //for now I'm only changing attending status here
-    Call<ResponseBody> changeAttendance(@Query("id") String params, @Query(value = "attending") String params2);
+    @GET("api/v1/editAttendance")
+    Call<JsonObject> editAttendance(@Query("id") String params, @Query(value = "attending") String params2);
 
     //destroyParticipant
    // @DELETE

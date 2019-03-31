@@ -13,7 +13,7 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        // TODO: Switch statment for each tab/Fragment
+
         switch (position) {
             case 0:
                 return new EventsFragment();
@@ -23,14 +23,14 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
             case 2:
                 DemoFragment demoFragment = new DemoFragment();
                 Bundle bundle = new Bundle();
-                bundle.putString("message", "Fragment :" + position);
+                bundle.putString("message", "DM's coming in a future update!");
                 demoFragment.setArguments(bundle);
                 return demoFragment;
 
             case 3:
                 DemoFragment demoFragment2 = new DemoFragment();
                 Bundle bundle2 = new Bundle();
-                bundle2.putString("message", "Fragment :" + position);
+                bundle2.putString("message", " Achievement Locked:  Coming Soon");
                 demoFragment2.setArguments(bundle2);
                 return demoFragment2;
 
