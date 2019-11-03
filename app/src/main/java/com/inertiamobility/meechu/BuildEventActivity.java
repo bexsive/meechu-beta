@@ -1,5 +1,4 @@
 package  com.inertiamobility.meechu;
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.content.Intent;
@@ -40,7 +39,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BuildEventActivity extends AppCompatActivity implements TimePickerFragment.TheListener, DatePickerFragment.TheListener {
-    TextView textView, setStartDateButton, setEndDateButton, setStartTimeButton, setEndTimeButton;
+    TextView setStartDateButton, setEndDateButton, setStartTimeButton, setEndTimeButton;
     EditText eventNameEditText;
     Button setVenueButton, inviteFriendsButton, postEventButton;
     Event newEvent = new Event();
@@ -50,11 +49,9 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     Bitmap bitmap;
     ImageView img;
 
-    int startDateYear, startDateMonth, startDateDay, startTimeHour, startTimeMin, endDateYear, endDateMonth, endDateDay, endTimeHour, endTimeMin;
+    static int startDateYear, startDateMonth, startDateDay, startTimeHour, startTimeMin, endDateYear, endDateMonth, endDateDay, endTimeHour, endTimeMin;
 
     private static final String TAG = "BuildEvent";
-    private static final String FINE_LOCATION = Manifest.permission.ACCESS_FINE_LOCATION;
-    private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int PLACE_PICKER_REQUEST = 1;
     private static final int IMG_REQUEST = 777;
 
@@ -63,7 +60,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_build_event);
 
-        textView = findViewById(R.id.buildEventHeader);
         eventNameEditText = findViewById(R.id.eventName);
         setStartDateButton = findViewById(R.id.setStartDate);
         setEndDateButton = findViewById(R.id.setEndDate);
@@ -92,33 +88,17 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     private void setTimeButtons(){
 
         Calendar calendar = Calendar.getInstance();
-        roundToNextWholeHour(calendar);
-        SimpleDateFormat HHMMformat = new SimpleDateFormat("h:mm a");
-        setStartTimeButton.setText("Start Time: " + HHMMformat.format(calendar.getTime()));
-
-        SimpleDateFormat DDMMformat = new SimpleDateFormat("MMM d");
-        setStartDateButton.setText("Start Date: " + DDMMformat.format(calendar.getTime()));
-        startDateYear = calendar.get(Calendar.YEAR);
-        startDateMonth = calendar.get(Calendar.MONTH);
-        startDateDay = calendar.get(Calendar.DAY_OF_MONTH);
-        startTimeHour = calendar.get(Calendar.HOUR);
-        startTimeMin = calendar.get(Calendar.MINUTE);
-
-        roundToNextWholeHour(calendar);
-        setEndTimeButton.setText("End Time: " + HHMMformat.format(calendar.getTime()));
-
-        setEndDateButton.setText("End Date: " + DDMMformat.format(calendar.getTime()));
-
-        endDateYear = calendar.get(Calendar.YEAR);
-        endDateMonth = calendar.get(Calendar.MONTH);
-        endDateDay = calendar.get(Calendar.DAY_OF_MONTH);
-        endTimeHour = calendar.get(Calendar.HOUR);
-        endTimeMin = calendar.get(Calendar.MINUTE);
-    }
-    public void roundToNextWholeHour(Calendar calendar) {
         calendar.add(Calendar.HOUR, 1);
         calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
+
+        setTime(setStartTimeButton, calendar);
+        setDate(setStartDateButton, calendar, 0);
+        timeHelper(calendar, 0);
+
+        calendar.add(Calendar.HOUR, 1);
+        setTime(setEndTimeButton, calendar);
+        setDate(setEndDateButton, calendar, 1);
+        timeHelper(calendar, 1);
     }
 
     private void init() {
@@ -145,7 +125,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 DialogFragment newFragment = new DatePickerFragment();
                 newFragment.setArguments(bundle);
                 newFragment.show(getFragmentManager(), "datePicker");
-
             }
         });
 
@@ -185,7 +164,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 } catch (GooglePlayServicesRepairableException e) {
                     e.printStackTrace();
                 } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace();
+                    e.printStackTrace ();
                 }
             }
         });
@@ -193,18 +172,40 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
         inviteFriendsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-            selectImage();
+            //selectImage();
+                Toast.makeText(BuildEventActivity.this, "The feature is not ready yet " , Toast.LENGTH_LONG).show();
+
+
             }
         });
 
         postEventButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+
                 newEvent.setName(eventNameEditText.getText().toString());
                 newEvent.setUserId(String.valueOf(preferenceConfig.readUserId()));
 
                 newEvent.setStartTime(componentTimeToTimestamp(startDateYear, startDateMonth, startDateDay, startTimeHour, startTimeMin));
                 newEvent.setEndTime(componentTimeToTimestamp(endDateYear, endDateMonth, endDateDay, endTimeHour, endTimeMin));
+
+                // Event Name input validation
+                if (newEvent.getName().equals("")){
+                    Toast.makeText(BuildEventActivity.this, "An Event has no name " , Toast.LENGTH_LONG).show();
+                    return;
+                }
+                // Event time/date input validation
+                if (!startBeforeEnd()){
+                    Toast.makeText(BuildEventActivity.this, "When? Event Ends before it begins " , Toast.LENGTH_LONG).show();
+                    return;
+                }
+                // Event location input validation
+                if(newEvent.getVenueName() == null || newEvent.getLat() == null || newEvent.getLng() == null){
+                    Toast.makeText(BuildEventActivity.this, "Where? Select a location " , Toast.LENGTH_LONG).show();
+                    return;
+
+                }
 
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(Api.BASE_URL)
@@ -235,6 +236,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                         Toast.makeText(BuildEventActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
+                //TODO:  Make a loading, and check for response before closing activity
                 finish();
 
             }
@@ -243,32 +245,48 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     }
     @Override
     public void returnStartDate(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+
         startDateYear = year;
         startDateMonth = month;
         startDateDay = day;
-        setStartDateButton.setText("Start Date: " + month + "/" + day);
-        returnEndDate(year, month, day);
+        setDate(setStartDateButton, cal, 0);
+
     }
     @Override
     public void returnEndDate(int year, int month, int day) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.YEAR, year);
+        cal.set(Calendar.MONTH, month);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+
         endDateYear = year;
         endDateMonth = month;
         endDateDay = day;
-        setEndDateButton.setText("End Date: " + month + "/" + day);
+        setDate(setEndDateButton, cal, 1);
     }
 
     @Override
     public void returnStartTime(int hour, int min) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, min);
         startTimeHour = hour;
         startTimeMin = min;
-        setStartTimeButton.setText("Start Time: " + hour + ":" + min);
-        //TODO: Set end time to one hour later (need to account for am/pm, so use DATE object. Too tired now
+        setTime(setStartTimeButton, cal);
     }
     @Override
     public void returnEndTime(int hour, int min) {
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, hour);
+        cal.set(Calendar.MINUTE, min);
+
         endTimeHour = hour;
         endTimeMin = min;
-        setEndTimeButton.setText("End Time: " + hour + ":" + min);
+        setTime(setEndTimeButton, cal);
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -302,6 +320,61 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    //Helpers
+
+    public void setTime(TextView textview, Calendar calendar){
+        SimpleDateFormat HHMMformat = new SimpleDateFormat("h:mm a");
+        textview.setText("Time: " + HHMMformat.format(calendar.getTime()));
+    }
+    public void setDate(TextView textview, Calendar calendar,int flag) {
+        SimpleDateFormat DDMMformat = new SimpleDateFormat("MMM d");;
+        if (flag > 0) {
+            textview.setText("End Date: " + DDMMformat.format(calendar.getTime()));
+        }
+        else {
+            textview.setText("Start Date: " + DDMMformat.format(calendar.getTime()));
+        }
+    }
+    public void timeHelper (Calendar cal, int flag){
+        if(flag > 0) {
+            endDateYear = cal.get(Calendar.YEAR);
+            endDateMonth = cal.get(Calendar.MONTH);
+            endDateDay = cal.get(Calendar.DAY_OF_MONTH);
+            endTimeHour = cal.get(Calendar.HOUR_OF_DAY);
+            endTimeMin = cal.get(Calendar.MINUTE);
+        }
+        else {
+            startDateYear = cal.get(Calendar.YEAR);
+            startDateMonth = cal.get(Calendar.MONTH);
+            startDateDay = cal.get(Calendar.DAY_OF_MONTH);
+            startTimeHour = cal.get(Calendar.HOUR_OF_DAY);
+            startTimeMin = cal.get(Calendar.MINUTE);
+        }
+    }
+    public boolean startBeforeEnd(){
+        Calendar startCal = Calendar.getInstance();
+        Calendar endCal = Calendar.getInstance();
+
+        startCal.set(Calendar.YEAR, startDateYear);
+        startCal.set(Calendar.MONTH, startDateMonth);
+        startCal.set(Calendar.DAY_OF_MONTH, startDateDay);
+        startCal.set(Calendar.HOUR_OF_DAY, startTimeHour);
+        startCal.set(Calendar.MINUTE, startTimeMin);
+
+        endCal.set(Calendar.YEAR, endDateYear);
+        endCal.set(Calendar.MONTH, endDateMonth);
+        endCal.set(Calendar.DAY_OF_MONTH, endDateDay);
+        endCal.set(Calendar.HOUR_OF_DAY, endTimeHour);
+        endCal.set(Calendar.MINUTE, endTimeMin);
+
+        if( startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
+            return false;
+        }
+        else{
+            return true;
         }
     }
 }

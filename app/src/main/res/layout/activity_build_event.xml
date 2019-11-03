@@ -4,40 +4,68 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".BuildEventActivity">
+    tools:context=".BuildEventActivity"
+    android:background="@color/cardview_dark_background"
+    >
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/buildEventHeader"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Create New Event"
-            android:gravity="center"
-            />
-
         <EditText
             android:id="@+id/eventName"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:hint="Enter Title" />
+            android:layout_height="wrap_content"
+            android:textColorHint="@color/buttonColor"
+            android:textColor="@color/colorPrimary"
+            android:gravity="center"
+            android:layout_margin="20dp"
+            android:hint="Enter Event Title" />
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_margin="20dp">
+
+            <TextView
+                android:id="@+id/setStartDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="22dp"
+                android:textColor="@color/buttonColor"
+                android:text="Start Date" />
 
             <TextView
                 android:id="@+id/setStartTime"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Set Start Time" />
+                android:textSize="22dp"
+                android:textColor="@color/buttonColor"
+                android:text="Time" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            >
+
+            <TextView
+                android:id="@+id/setEndDate"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="22dp"
+                android:textColor="@color/buttonColor"
+                android:text="End Date" />
 
             <TextView
                 android:id="@+id/setEndTime"
@@ -45,54 +73,42 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="right"
-                android:text="Set End Time" />
+                android:textSize="22dp"
+                android:textColor="@color/buttonColor"
+                android:text="Time" />
 
-        </LinearLayout>
+         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            >
 
-            <TextView
-                android:id="@+id/setStartDate"
-                android:layout_width="0dp"
+            <Button
+                android:id="@+id/setVenue"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Set Start Day" />
+                android:text="Where"
+                android:layout_margin="40dp"
+                />
 
-            <TextView
-                android:id="@+id/setEndDate"
-                android:layout_width="0dp"
+            <Button
+                android:id="@+id/inviteFriends"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Set End Day" />
+                android:text="Invite Friends"
+                android:layout_margin="40dp"
+                />
+
+            <Button
+                android:id="@+id/postEvent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:text="Post"
+                android:layout_margin="40dp"/>
 
         </LinearLayout>
-
-        <Button
-            android:id="@+id/setVenue"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Where" />
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/image"
-            />
-
-        <Button
-            android:id="@+id/inviteFriends"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Invite Friends" />
-
-        <Button
-            android:id="@+id/postEvent"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Post" />
-
-
     </LinearLayout>
 </RelativeLayout>
