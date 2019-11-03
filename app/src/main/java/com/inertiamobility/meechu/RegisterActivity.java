@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -48,11 +50,11 @@ public class RegisterActivity extends AppCompatActivity {
         reg_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (firstName.getText().toString().equals("") || lastName.getText().toString().equals("") || phoneNumber.getText().toString().equals("") || email.getText().toString().equals("") || pass.getText().toString().equals("")){
+//First Name
+                if(firstName.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
-                    builder.setMessage("Please fill all fields");
+                    builder.setMessage("First name cannot be left blank");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -62,8 +64,118 @@ public class RegisterActivity extends AppCompatActivity {
 
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
+                    return;
                 }
-                else if (!(pass.getText().toString().equals(conPass.getText().toString()))){
+                else{
+                    newUser.setFirstName(firstName.getText().toString());
+                }
+//Last Name
+                if(lastName.getText().toString().equals("")){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Last name cannot be left blank");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+                else{
+                    newUser.setLastName(lastName.getText().toString());
+                }
+//Phone Number
+                if(phoneNumber.getText().toString().equals("")){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Phone Number cannot be left blank");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+//Phone number must be 10 digits
+                else if(phoneNumber.getText().toString().replaceAll("\\D+", "").length() != 10){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Phone number must be 10 digits");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+                else{
+                    newUser.setPhoneNumber(phoneNumber.getText().toString());
+                }
+//Email
+                if(email.getText().toString().equals("")){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Email cannot be left blank");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+                //TODO: Improve this regex? (or just confirm emails/phone numbers)
+                else if(validate(email.getText().toString())){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Email format not valid");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+                else{
+                    newUser.setEmail(email.getText().toString());
+                }
+//Password
+                if(pass.getText().toString().equals("")){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Password cannot be left blank");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                }
+
+                if(!(pass.getText().toString().equals(conPass.getText().toString()))){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
                     builder.setMessage("Your passwords are not matching");
@@ -77,14 +189,10 @@ public class RegisterActivity extends AppCompatActivity {
                     });
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
+                    return;
                 }
 
                 else{
-
-                        newUser.setFirstName(firstName.getText().toString());
-                        newUser.setLastName(lastName.getText().toString());
-                        newUser.setPhoneNumber(phoneNumber.getText().toString());
-                        newUser.setEmail(email.getText().toString());
                         newUser.setPassword(pass.getText().toString());
                         newUser.setPasswordConfirmation(conPass.getText().toString());
 
@@ -105,6 +213,10 @@ public class RegisterActivity extends AppCompatActivity {
 
                             Log.d(TAG, "onResponse: Server Response: " + response.toString());
 
+                            if (response.message().equals("Unprocessable Entity")){
+                                Toast.makeText(RegisterActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
+                                return;
+                            }
                             if (newUser.getEmail().equals(response.body().getEmail()))
                                 newUser.setId(response.body().getId());
                                 Toast.makeText(RegisterActivity.this, "Response" + newUser.getId(), Toast.LENGTH_LONG).show();
@@ -124,5 +236,13 @@ public class RegisterActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+    public static boolean validate(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+        return matcher.find();
     }
 }

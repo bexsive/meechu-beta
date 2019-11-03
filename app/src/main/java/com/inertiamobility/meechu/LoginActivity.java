@@ -40,11 +40,12 @@ public class LoginActivity extends AppCompatActivity {
         preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
 
         //TODO: Re-Do this with new shared Preferences
+       /*
         if (preferenceConfig.readLoginStatus()){
             startActivity(new Intent(LoginActivity.this, MainActivity.class));
             finish();
         }
-
+*/
         login_button = findViewById(R.id.login_button);
         login_button.setOnClickListener(new View.OnClickListener() {
             @Override
