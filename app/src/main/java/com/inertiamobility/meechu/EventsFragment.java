@@ -1,12 +1,13 @@
 package  com.inertiamobility.meechu;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.fragment.app.Fragment;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,7 +65,8 @@ public class EventsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getContext(), BuildEventActivity.class));
+                //startActivity(new Intent(getContext(), BuildEventActivity.class));
+                startActivityForResult(new Intent(getContext(), BuildEventActivity.class), 1);
             }
         });
 
@@ -110,5 +112,14 @@ public class EventsFragment extends Fragment {
                 Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Make sure the request was successful
+        if (resultCode == Activity.RESULT_OK) {
+            Log.d(TAG,"Success ID: " + data.getStringExtra("Event ID"));
+            //TODO: Add new event to event list, as an insertion
+
+        }
     }
 }

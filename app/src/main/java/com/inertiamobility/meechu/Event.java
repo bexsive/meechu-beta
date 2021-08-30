@@ -9,24 +9,31 @@ public class Event implements Serializable {
     @SerializedName("id")
     @Expose
     private String id;
+
     @SerializedName("name")
     @Expose
     private String name;
+
     @SerializedName("venue_name")
     @Expose
     private String venueName;
+
     @SerializedName("start_time")
     @Expose
     private String startTime;
+
     @SerializedName("end_time")
     @Expose
     private String endTime;
+
     @SerializedName("user_id")
     @Expose
     private String userId;
+
     @SerializedName("lat")
     @Expose
     private String lat;
+
     @SerializedName("lng")
     @Expose
     private String lng;

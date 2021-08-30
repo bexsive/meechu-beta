@@ -1,27 +1,20 @@
 package  com.inertiamobility.meechu;
-
-
 import com.google.gson.JsonObject;
-
 import java.util.List;
 import java.util.Map;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
-import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
-
 public interface Api {
 
-    String BASE_URL = "http://54.67.75.160/";
+    String BASE_URL = "https://34.70.78.151/";
 
     @POST("api/v1/events")
-    Call<ResponseBody> postEvent(
+    Call<EventResponse> postEvent(
             @HeaderMap Map<String, String> headers,
             @Body Event event);
 

@@ -1,13 +1,13 @@
 package  com.inertiamobility.meechu;
+
 import android.annotation.TargetApi;
 import android.app.DialogFragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,28 +15,26 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.ui.PlacePicker;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
+import com.google.android.gms.common.api.Status;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.AutocompleteActivity;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
-
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import org.apache.commons.lang3.text.WordUtils;
 
 public class BuildEventActivity extends AppCompatActivity implements TimePickerFragment.TheListener, DatePickerFragment.TheListener {
     TextView setStartDateButton, setEndDateButton, setStartTimeButton, setEndTimeButton;
@@ -44,6 +42,8 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     Button setVenueButton, inviteFriendsButton, postEventButton;
     Event newEvent = new Event();
     private SharedPreferenceConfig preferenceConfig;
+    //Map Places
+    private static final int AUTOCOMPLETE_REQUEST_CODE = 1;
 
     //Pictures
     Bitmap bitmap;
@@ -76,13 +76,11 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
 
         setTimeButtons();
         init();
-    }
+        // Initialize Places.
+        Places.initialize(getApplicationContext(), getString(R.string.google_place_api));
 
-    private void selectImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, IMG_REQUEST);
+        // Create a new Places client instance.
+        PlacesClient placesClient = Places.createClient(this);
     }
 
     private void setTimeButtons(){
@@ -150,22 +148,22 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 DialogFragment newFragment = new TimePickerFragment();
                 newFragment.setArguments(bundle);
                 newFragment.show(getFragmentManager(), "timePicker");
-
             }
         });
 
         setVenueButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
 
-                try {
-                    startActivityForResult(builder.build(BuildEventActivity.this), PLACE_PICKER_REQUEST);
-                } catch (GooglePlayServicesRepairableException e) {
-                    e.printStackTrace();
-                } catch (GooglePlayServicesNotAvailableException e) {
-                    e.printStackTrace ();
-                }
+                // Set the fields to specify which types of place data to
+                // return after the user has made a selection.
+                //TODO Event items needed
+                List<Place.Field> fields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+
+                // Start the autocomplete intent.
+                Intent intent = new Autocomplete.IntentBuilder(AutocompleteActivityMode.OVERLAY, fields)
+                        .build(BuildEventActivity.this);
+                startActivityForResult(intent, AUTOCOMPLETE_REQUEST_CODE);
             }
         });
 
@@ -174,8 +172,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
             public void onClick(View v) {
             //selectImage();
                 Toast.makeText(BuildEventActivity.this, "The feature is not ready yet " , Toast.LENGTH_LONG).show();
-
-
             }
         });
 
@@ -183,8 +179,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
             @Override
             public void onClick(View view) {
 
-
-                newEvent.setName(eventNameEditText.getText().toString());
+                newEvent.setName(WordUtils.capitalize(eventNameEditText.getText().toString()));
                 newEvent.setUserId(String.valueOf(preferenceConfig.readUserId()));
 
                 newEvent.setStartTime(componentTimeToTimestamp(startDateYear, startDateMonth, startDateDay, startTimeHour, startTimeMin));
@@ -204,7 +199,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 if(newEvent.getVenueName() == null || newEvent.getLat() == null || newEvent.getLng() == null){
                     Toast.makeText(BuildEventActivity.this, "Where? Select a location " , Toast.LENGTH_LONG).show();
                     return;
-
                 }
 
                 Retrofit retrofit = new Retrofit.Builder()
@@ -215,30 +209,24 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 Api api = retrofit.create(Api.class);
                 HashMap<String, String> headerMap = new HashMap<String, String>();
                 headerMap.put("Content-Type", "application/json");
-                Call<ResponseBody> call = api.postEvent(headerMap,
+                Call<EventResponse> call = api.postEvent(headerMap,
                         newEvent );
 
-                call.enqueue(new Callback<ResponseBody>() {
+                call.enqueue(new Callback<EventResponse>() {
                     @Override
-                    public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
+                    public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
 
-                        try {
-                            String json = response.body().toString();
-                            Log.d(TAG, "onResponse: json: " + json);
-                            JSONObject data = new JSONObject(json);
-                        }catch (JSONException e){
-                            Log.e(TAG, "onResponse: JSONException: " + e.getMessage() );
-                        }
+                        Intent output = new Intent();
+                        output.putExtra("Event ID", response.body().getData());
+                        setResult(RESULT_OK, output);
+                        finish();
                     }
 
                     @Override
-                    public void onFailure(Call<ResponseBody> call, Throwable t) {
+                    public void onFailure(Call<EventResponse> call, Throwable t) {
                         Toast.makeText(BuildEventActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });
-                //TODO:  Make a loading, and check for response before closing activity
-                finish();
-
             }
         });
 
@@ -297,30 +285,27 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
         Date df = new Date(dv);
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US).format(df);
     }
-
-
-    protected void onActivityResult ( int requestCode, int resultCode, Intent data){
-        if (requestCode == PLACE_PICKER_REQUEST) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
             if (resultCode == RESULT_OK) {
-                Place place = PlacePicker.getPlace(this, data);
+                Place place = Autocomplete.getPlaceFromIntent(data);
+                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
                 newEvent.setVenueName((String) place.getName());
                 newEvent.setLat(Double.toString(place.getLatLng().latitude));
                 newEvent.setLng(Double.toString(place.getLatLng().longitude));
                 String toastMsg = String.format("Place: %s", place.getName());
                 Toast.makeText(this, toastMsg, Toast.LENGTH_LONG).show();
+            } else if (resultCode == AutocompleteActivity.RESULT_ERROR) {
+                // TODO: Handle the error.
+                Status status = Autocomplete.getStatusFromIntent(data);
+                Log.i(TAG, status.getStatusMessage());
+            } else if (resultCode == RESULT_CANCELED) {
+                // The user canceled the operation.
             }
+            return;
         }
-        if (requestCode == IMG_REQUEST && resultCode == RESULT_OK && data != null){
-           Uri path = data.getData();
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), path);
-                img.setImageBitmap(bitmap);
-                img.setVisibility(View.VISIBLE);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     //Helpers

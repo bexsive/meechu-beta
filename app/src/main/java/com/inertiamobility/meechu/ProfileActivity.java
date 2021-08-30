@@ -1,7 +1,7 @@
 package com.inertiamobility.meechu;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -9,8 +9,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
-
-import java.util.Objects;
 
 import retrofit2.Call;
 import retrofit2.Callback;
