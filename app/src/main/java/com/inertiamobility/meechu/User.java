@@ -18,10 +18,6 @@ public class User implements Serializable {
     @Expose
     private String password;
 
-    @SerializedName("password_confirmation")
-    @Expose
-    private String passwordConfirmation;
-
     @SerializedName("first_name")
     @Expose
     private String firstName;
@@ -38,10 +34,9 @@ public class User implements Serializable {
     @Expose
     private String phoneNumber;
 
-    @SerializedName("avatar")
+    @SerializedName("avatar_url")
     @Expose
-    private String avatar;
-
+    private String avatar_url;
 
     public String getId() {
         return id;
@@ -65,14 +60,6 @@ public class User implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public String getPasswordConfirmation() {
-        return passwordConfirmation;
-    }
-
-    public void setPasswordConfirmation(String passwordConfirmation) {
-        this.passwordConfirmation = passwordConfirmation;
     }
 
     public String getFirstName() {
@@ -108,10 +95,10 @@ public class User implements Serializable {
     }
 
     public String getAvatar() {
-        return avatar;
+        return avatar_url;
     }
 
     public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        this.avatar_url = avatar_url;
     }
 }

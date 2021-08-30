@@ -11,9 +11,16 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    String BASE_URL = "https://34.70.78.151/";
+    String BASE_URL = "https://34.70.78.151/api/v1/";
 
-    @POST("api/v1/events")
+    // User Registration
+    @POST("users/register_new_user")
+    Call<User> registerUser(
+            @HeaderMap Map<String, String> headers,
+            @Body User user);
+
+    // Make an event
+    @POST("events")
     Call<EventResponse> postEvent(
             @HeaderMap Map<String, String> headers,
             @Body Event event);
@@ -27,10 +34,6 @@ public interface Api {
             @HeaderMap Map<String, String> headers,
             @Body User user);
 
-    @POST("api/v1/users")
-    Call<User> createUser(
-            @HeaderMap Map<String, String> headers,
-            @Body User user);
 
     //@PUT("api/v1/users")
     //Call<User> updateUser(

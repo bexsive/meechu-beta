@@ -28,7 +28,6 @@ public class RegisterActivity extends AppCompatActivity {
     EditText firstName, lastName, phoneNumber, email, pass, conPass;
     Button reg_button;
     User newUser;
-
     AlertDialog.Builder builder;
 
     @Override
@@ -50,7 +49,7 @@ public class RegisterActivity extends AppCompatActivity {
         reg_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//First Name
+                // Validate and assign First Name
                 if(firstName.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -61,15 +60,27 @@ public class RegisterActivity extends AppCompatActivity {
                             dialog.dismiss();
                         }
                     });
-
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                     return;
-                }
-                else{
+                } else if(firstName.getText().length() < 2){
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("First name has to be at lease two letters");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                } else {
                     newUser.setFirstName(firstName.getText().toString());
                 }
-//Last Name
+
+                // Validate and assign Last Name
                 if(lastName.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -84,11 +95,25 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                     return;
-                }
-                else{
+                }  else if(lastName.getText().toString().length() < 2) {
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Last  name has to be at lease two letters");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                } else {
                     newUser.setLastName(lastName.getText().toString());
                 }
-//Phone Number
+
+                // Phone Number
                 if(phoneNumber.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -104,7 +129,7 @@ public class RegisterActivity extends AppCompatActivity {
                     alertDialog.show();
                     return;
                 }
-//Phone number must be 10 digits
+                // Phone number must be 10 digits
                 else if(phoneNumber.getText().toString().replaceAll("\\D+", "").length() != 10){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -119,11 +144,11 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                     return;
-                }
-                else{
+                } else{
                     newUser.setPhoneNumber(phoneNumber.getText().toString());
                 }
-//Email
+
+                // Email
                 if(email.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -139,7 +164,7 @@ public class RegisterActivity extends AppCompatActivity {
                     alertDialog.show();
                     return;
                 }
-                //TODO: Improve this regex? (or just confirm emails/phone numbers)
+                // TODO: Improve this regex? (or just confirm emails/phone numbers)
                 else if(validate(email.getText().toString())){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -158,11 +183,26 @@ public class RegisterActivity extends AppCompatActivity {
                 else{
                     newUser.setEmail(email.getText().toString());
                 }
-//Password
+
+                // Password
                 if(pass.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
                     builder.setMessage("Password cannot be left blank");
+                    builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+                    AlertDialog alertDialog = builder.create();
+                    alertDialog.show();
+                    return;
+                } else if(pass.getText().toString().length() < 6) {
+                    builder = new AlertDialog.Builder(RegisterActivity.this);
+                    builder.setTitle("Something went wrong...");
+                    builder.setMessage("Password must be at least 6 characters long");
                     builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
@@ -190,11 +230,8 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                     return;
-                }
-
-                else{
-                        newUser.setPassword(pass.getText().toString());
-                        newUser.setPasswordConfirmation(conPass.getText().toString());
+                } else{
+                    newUser.setPassword(pass.getText().toString());
 
                     Retrofit retrofit = new Retrofit.Builder()
                             .baseUrl(Api.BASE_URL)
@@ -204,13 +241,14 @@ public class RegisterActivity extends AppCompatActivity {
                     Api api = retrofit.create(Api.class);
                     HashMap<String, String> headerMap = new HashMap<String, String>();
                     headerMap.put("Content-Type", "application/json");
-                    Call<User> call = api.createUser(headerMap,
+                    Call<User> call = api.registerUser(headerMap,
                             newUser );
 
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
 
+                            // TODO: Remove this after testing
                             Log.d(TAG, "onResponse: Server Response: " + response.toString());
 
                             if (response.message().equals("Unprocessable Entity")){
@@ -219,6 +257,7 @@ public class RegisterActivity extends AppCompatActivity {
                             }
                             if (newUser.getEmail().equals(response.body().getEmail()))
                                 newUser.setId(response.body().getId());
+                            // TODO: Remove this after testing
                                 Toast.makeText(RegisterActivity.this, "Response" + newUser.getId(), Toast.LENGTH_LONG).show();
                                 preferenceConfig.writeLoginStatus(true);
                                 preferenceConfig.writeUserId(Integer.parseInt(newUser.getId()));
