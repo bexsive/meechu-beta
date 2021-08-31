@@ -4,7 +4,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -164,8 +167,8 @@ public class RegisterActivity extends AppCompatActivity {
                     alertDialog.show();
                     return;
                 }
-                // TODO: Improve this regex? (or just confirm emails/phone numbers)
-                else if(validate(email.getText().toString())){
+                // Validate email format
+                else if(!isValidEmail(email.getText().toString())){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
                     builder.setMessage("Email format not valid");
@@ -277,11 +280,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
-            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
-
-    public static boolean validate(String emailStr) {
-        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
-        return matcher.find();
+    public static boolean isValidEmail(CharSequence target) {
+        return (Patterns.EMAIL_ADDRESS.matcher(target).matches());
     }
 }

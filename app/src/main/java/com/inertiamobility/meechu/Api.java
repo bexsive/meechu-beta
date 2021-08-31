@@ -11,7 +11,7 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    String BASE_URL = "https://34.70.78.151/api/v1/";
+    String BASE_URL = "https://meechu.me/api/v1/";
 
     // User Registration
     @POST("users/register_new_user")
