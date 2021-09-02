@@ -13,7 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -244,8 +246,7 @@ public class RegisterActivity extends AppCompatActivity {
                     Api api = retrofit.create(Api.class);
                     HashMap<String, String> headerMap = new HashMap<String, String>();
                     headerMap.put("Content-Type", "application/json");
-                    Call<User> call = api.registerUser(headerMap,
-                            newUser );
+                    Call<User> call = api.registerUser(headerMap, newUser);
 
                     call.enqueue(new Callback<User>() {
                         @Override
