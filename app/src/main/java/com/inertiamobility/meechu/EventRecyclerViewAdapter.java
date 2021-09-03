@@ -53,7 +53,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         holder.venueNameText.setText(events.get(position).getVenueName());
 
         //Calc Date/Time
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         try {
             holder.startTimeText.setText(DateUtils.getRelativeTimeSpanString(dateFormat.parse(events.get(position).getStartTime()).getTime(), System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS));
         } catch (ParseException e) {
@@ -79,7 +79,6 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
                 bundle.putString("lng", events.get(position).getLng());
                 intent.putExtras(bundle);
                 mContext.startActivity(intent);
-
             }
         });
     }

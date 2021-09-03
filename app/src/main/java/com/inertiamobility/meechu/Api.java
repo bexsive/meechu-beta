@@ -11,15 +11,14 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    // String BASE_URL = "https://meechu.me/api/v1/";
-    String BASE_URL = "http://34.70.78.151/api/v1/";
+    String BASE_URL = "https://meechu.me/api/v1/";
+    // String BASE_URL = "http://34.70.78.151/api/v1/";
 
     // User Registration
     @POST("users/register_new_user")
     Call<User> registerUser(
             @HeaderMap Map<String, String> headers,
             @Body User user);
-
 
     // Make an event
     @POST("events")
@@ -31,11 +30,15 @@ public interface Api {
     @GET("feed")
     Call<EventList> getFeed(@Query("user_id") String params);
 
+    // Check Participant status
+    @GET("check_attendance")
+    Call<ResponseEventParticipant> check_attendance(@Query("user_id") String params, @Query(value = "event_id") String params2 );
+
+
     @POST("api/v1/sessions")
     Call<User> login(
             @HeaderMap Map<String, String> headers,
             @Body User user);
-
 
     //@PUT("api/v1/users")
     //Call<User> updateUser(
@@ -52,10 +55,6 @@ public interface Api {
     //addContacts (From phone contacts list)
     @GET("api/v1/addContacts")
     Call<UserList> addContacts(@Query("user_id") String params, @Query(value = "numbers[]") List<String> params2);
-
-    //Check Participant status
-    @GET("api/v1/findEventParticipant")
-    Call<ResponseEventParticipant> findEventParticipant(@Query("user_id") String params, @Query(value = "event_id") String params2 );
 
     //createParticipant
     @POST("api/v1/event_participants")

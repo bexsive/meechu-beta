@@ -1,5 +1,4 @@
 package com.inertiamobility.meechu;
-
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.format.DateUtils;
@@ -8,15 +7,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.gson.JsonObject;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -66,7 +62,7 @@ public class EventActivity extends AppCompatActivity {
         eventNameText.setText(event.getName());
         venueNameText.setText(event.getVenueName());
 
-        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
         try {
             startTimeText.setText(DateUtils.getRelativeTimeSpanString(dateFormat.parse(event.getStartTime()).getTime(), System.currentTimeMillis(), DateUtils.DAY_IN_MILLIS));
         } catch (ParseException e) {
@@ -74,6 +70,7 @@ public class EventActivity extends AppCompatActivity {
         }
 
         preferenceConfig = new SharedPreferenceConfig(getApplicationContext());
+        // TODO: Make this a universal method
         distanceAwayText.setText(String.format("%.0f", haversine_mi(
                 preferenceConfig.readUserLat(),
                 preferenceConfig.readUserLng(), Double.valueOf(event.getLat()), Double.valueOf(event.getLng()))) + " Miles Away");
@@ -88,21 +85,16 @@ public class EventActivity extends AppCompatActivity {
         attendingButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 eventParticipant.setAttending("true");
                 updateStatus(isNew);
-
             }
         });
-
 
         maybeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 eventParticipant.setAttending("false");
                 updateStatus(isNew);
-
             }
         });
 
@@ -113,7 +105,6 @@ public class EventActivity extends AppCompatActivity {
                 Toast.makeText(getApplicationContext(), "Can't delete events yet, upgrades coming", Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
     double haversine_mi(double lat1, double long1, double lat2, double long2) {
@@ -122,9 +113,7 @@ public class EventActivity extends AppCompatActivity {
         double dlat = (lat2 - lat1) * d2r;
         double a = Math.pow(Math.sin(dlat/2.0), 2) + Math.cos(lat1*d2r) * Math.cos(lat2*d2r) * Math.pow(Math.sin(dlong/2.0), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double d = 3956 * c;
-
-        return d;
+        return 3956 * c;
     }
 
     void checkAttendance(){
@@ -134,12 +123,12 @@ public class EventActivity extends AppCompatActivity {
                 .build();
 
         Api api = retrofit.create(Api.class);
-        Call<ResponseEventParticipant> call = api.findEventParticipant(String.valueOf(preferenceConfig.readUserId()), event.getId());
+        Call<ResponseEventParticipant> call = api.check_attendance(String.valueOf(preferenceConfig.readUserId()), event.getId());
 
         call.enqueue(new Callback<ResponseEventParticipant>() {
             @Override
             public void onResponse(Call<ResponseEventParticipant> call, Response<ResponseEventParticipant> response) {
-
+                // If empty array is returned, not attending.  If Attending False, then its Maybe.  If true, Attending
                 ResponseEventParticipant responseEventParticipant = response.body();
                 isChecked = Boolean.TRUE;
 
@@ -154,9 +143,7 @@ public class EventActivity extends AppCompatActivity {
 
                     //Change button text
                     attendingText.setText("Not Going");
-
-                }
-                else {
+                } else {
                     eventParticipant.setUserId(responseEventParticipant.eventParticipant.getUserId());
                     eventParticipant.setEventId(responseEventParticipant.eventParticipant.getEventId());
                     eventParticipant.setAttending(responseEventParticipant.eventParticipant.getAttending());
@@ -171,13 +158,11 @@ public class EventActivity extends AppCompatActivity {
                         attendingButton.setVisibility(View.GONE);
                         maybeButton.setVisibility(View.VISIBLE);
                         leaveButton.setVisibility(View.VISIBLE);
-                    }
-                    else{
+                    } else{
                         attendingText.setText("Maybe Attending");
                         attendingButton.setVisibility(View.VISIBLE);
                         maybeButton.setVisibility(View.GONE);
                         leaveButton.setVisibility(View.VISIBLE);
-
                     }
                 }
             }
@@ -221,10 +206,7 @@ public class EventActivity extends AppCompatActivity {
                         attendingText.setText("Attending");
                         attendingButton.setVisibility(View.GONE);
                         maybeButton.setVisibility(View.VISIBLE);
-                        leaveButton.setVisibility(View.VISIBLE);
-
-                    }
-                    else {
+                    } else {
                         //Update Event Maybe
                         eventParticipant.setAttending("false");
 
@@ -232,9 +214,8 @@ public class EventActivity extends AppCompatActivity {
                         attendingText.setText("Maybe Attending");
                         attendingButton.setVisibility(View.VISIBLE);
                         maybeButton.setVisibility(View.GONE);
-                        leaveButton.setVisibility(View.VISIBLE);
-
                     }
+                    leaveButton.setVisibility(View.VISIBLE);
                 }
 
                 @Override
@@ -243,8 +224,7 @@ public class EventActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
                 }
             });
-        }
-        else{
+        } else{
             //Edit
             Api api = retrofit.create(Api.class);
             HashMap<String, String> headerMap = new HashMap<>();
@@ -268,10 +248,7 @@ public class EventActivity extends AppCompatActivity {
                         attendingText.setText("Attending");
                         attendingButton.setVisibility(View.GONE);
                         maybeButton.setVisibility(View.VISIBLE);
-                        leaveButton.setVisibility(View.VISIBLE);
-
-                    }
-                    else {
+                    } else {
                         //Update Event
                         eventParticipant.setAttending("false");
 
@@ -279,9 +256,8 @@ public class EventActivity extends AppCompatActivity {
                         attendingText.setText("Maybe Attending");
                         attendingButton.setVisibility(View.VISIBLE);
                         maybeButton.setVisibility(View.GONE);
-                        leaveButton.setVisibility(View.VISIBLE);
-
                     }
+                    leaveButton.setVisibility(View.VISIBLE);
                 }
 
                 @Override

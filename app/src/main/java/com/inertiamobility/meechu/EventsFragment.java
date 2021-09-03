@@ -65,7 +65,6 @@ public class EventsFragment extends Fragment {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //startActivity(new Intent(getContext(), BuildEventActivity.class));
                 startActivityForResult(new Intent(getContext(), BuildEventActivity.class), 1);
             }
         });

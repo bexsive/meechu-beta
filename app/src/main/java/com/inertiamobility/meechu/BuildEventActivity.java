@@ -229,8 +229,8 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 });
             }
         });
-
     }
+
     @Override
     public void returnStartDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
@@ -242,8 +242,8 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
         startDateMonth = month;
         startDateDay = day;
         setDate(setStartDateButton, cal, 0);
-
     }
+
     @Override
     public void returnEndDate(int year, int month, int day) {
         Calendar cal = Calendar.getInstance();
@@ -283,8 +283,10 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
         c.set(year, month, day, hour, minute, 0);
         long dv = Long.valueOf(c.getTimeInMillis());// its need to be in milisecond
         Date df = new Date(dv);
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.US).format(df);
+        //TODO update format
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).format(df);
     }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == AUTOCOMPLETE_REQUEST_CODE) {
@@ -318,8 +320,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
         SimpleDateFormat DDMMformat = new SimpleDateFormat("MMM d");;
         if (flag > 0) {
             textview.setText("End Date: " + DDMMformat.format(calendar.getTime()));
-        }
-        else {
+        } else {
             textview.setText("Start Date: " + DDMMformat.format(calendar.getTime()));
         }
     }
@@ -330,8 +331,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
             endDateDay = cal.get(Calendar.DAY_OF_MONTH);
             endTimeHour = cal.get(Calendar.HOUR_OF_DAY);
             endTimeMin = cal.get(Calendar.MINUTE);
-        }
-        else {
+        } else {
             startDateYear = cal.get(Calendar.YEAR);
             startDateMonth = cal.get(Calendar.MONTH);
             startDateDay = cal.get(Calendar.DAY_OF_MONTH);
@@ -357,8 +357,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
 
         if( startCal.getTimeInMillis() > endCal.getTimeInMillis()) {
             return false;
-        }
-        else{
+        } else{
             return true;
         }
     }
