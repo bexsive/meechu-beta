@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
@@ -13,11 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -255,12 +250,19 @@ public class RegisterActivity extends AppCompatActivity {
                             // TODO: Remove this after testing
                             Log.d(TAG, "onResponse: Server Response: " + response.toString());
 
+
                             if (response.message().equals("Unprocessable Entity")){
                                 Toast.makeText(RegisterActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             if (newUser.getEmail().equals(response.body().getEmail()))
                                 newUser.setId(response.body().getId());
+                                Log.d(TAG, "onResponse: Server Response Message: " + response.message());
+                                Log.d(TAG, "onResponse: Server Response Body: " + response.toString());
+                                Log.d(TAG, "onResponse: Server Response ID: " + response.body().getId());
+                                Log.d(TAG, "onResponse: Server Response email: " + response.body().getEmail());
+
+
                             // TODO: Remove this after testing
                                 Toast.makeText(RegisterActivity.this, "Response" + newUser.getId(), Toast.LENGTH_LONG).show();
                                 preferenceConfig.writeLoginStatus(true);
@@ -269,6 +271,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                 finish();
                         }
+
 
                         @Override
                         public void onFailure(Call<User> call, Throwable t) {

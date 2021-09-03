@@ -96,7 +96,7 @@ public class EventsFragment extends Fragment {
 
         //pull user_id from shared preferences object
         userID = String.valueOf(preferenceConfig.readUserId());
-        Call<EventList> call = api.getEvents(userID);
+        Call<EventList> call = api.getFeed(userID);
 
         call.enqueue(new Callback<EventList>() {
             @Override

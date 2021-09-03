@@ -11,7 +11,8 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    String BASE_URL = "https://meechu.me/api/v1/";
+    // String BASE_URL = "https://meechu.me/api/v1/";
+    String BASE_URL = "http://34.70.78.151/api/v1/";
 
     // User Registration
     @POST("users/register_new_user")
@@ -26,9 +27,9 @@ public interface Api {
             @HeaderMap Map<String, String> headers,
             @Body Event event);
 
-    @GET("api/v1/events")
-    Call<EventList> getEvents(@Query("user_id") String params);
-
+    // Timeline
+    @GET("feed")
+    Call<EventList> getFeed(@Query("user_id") String params);
 
     @POST("api/v1/sessions")
     Call<User> login(
