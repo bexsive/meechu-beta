@@ -1,6 +1,4 @@
 package com.inertiamobility.meechu;
-
-
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,7 +6,6 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Handler;
 import android.provider.ContactsContract;
-
 import androidx.fragment.app.Fragment;
 import android.os.Bundle;
 import androidx.core.content.ContextCompat;
@@ -21,10 +18,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -35,18 +30,16 @@ import static android.Manifest.permission.*;
 import static android.content.pm.PackageManager.*;
 
 public class SearchFriendsFragment extends Fragment {
-
+    private static final String TAG = "SearchFriendsFragment";
     EditText searchBar;
     Button searchButton, contactsSearchButton;
     Context context;
-    private static final String TAG = "SearchFriendsFragment";
     UserRecyclerViewAdapter adapter;
 
     //Contacts from Phone
     List<User> users = new ArrayList<>();
     private SharedPreferenceConfig preferenceConfig;
     String userID;
-
 
     public SearchFriendsFragment() {
         // Required empty public constructor
@@ -81,38 +74,33 @@ public class SearchFriendsFragment extends Fragment {
                                 .build();
 
                         Api api = retrofit.create(Api.class);
-                        Call<ResponseUser> call = api.findUsers(searchBar.getText().toString());
-                        call.enqueue(new Callback<ResponseUser>() {
+                        Call<User> call = api.findUsersFromPhoneNumber(searchBar.getText().toString());
+                        call.enqueue(new Callback<User>() {
                             @Override
-                            public void onResponse(Call<ResponseUser> call, Response<ResponseUser> response) {
+                            public void onResponse(Call<User> call, Response<User> response) {
 
                                 //TODO: Exception handling for no matches
-                                ResponseUser responseUser = response.body();
                                 // Start new activity passing User Info
-                                if (responseUser.user == null){
+                                if (response.body().getId() == null){
                                     Toast.makeText(context, "Didn't find anyone", Toast.LENGTH_LONG).show();
-                                }
-                                else {
+                                } else {
                                     Intent intent = new Intent(context, ProfileActivity.class);
                                     Bundle bundle = new Bundle();
-                                    bundle.putString("first_name", responseUser.user.getFirstName());
-                                    bundle.putString("last_name", responseUser.user.getLastName());
-                                    bundle.putString("ID", responseUser.user.getId());
+                                    bundle.putString("first_name", response.body().getFirstName());
+                                    bundle.putString("last_name", response.body().getLastName());
+                                    bundle.putString("ID", response.body().getId());
                                     intent.putExtras(bundle);
                                     startActivity(intent);
                                 }
                             }
 
                             @Override
-                            public void onFailure(Call<ResponseUser> call, Throwable t) {
+                            public void onFailure(Call<User> call, Throwable t) {
                                 //Testing
                                 Toast.makeText(context, "Something Went Wrong", Toast.LENGTH_LONG).show();
-
-
                             }
                         });
-                    }
-                    else {
+                    } else {
                         Toast.makeText(getContext(), "Number should be 10 digits", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -138,7 +126,6 @@ public class SearchFriendsFragment extends Fragment {
                             }
                         }, 1000);
                     }
-
                 }
             });
 
@@ -146,7 +133,6 @@ public class SearchFriendsFragment extends Fragment {
     }
 
     public List<String> get_Contacts(){
-
         //TODO:  Check contacts permissions
         List<String> numbers = new ArrayList<>();
 
@@ -184,7 +170,6 @@ public class SearchFriendsFragment extends Fragment {
     }
 
     public void updateList(List<String> numbers){
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -192,9 +177,7 @@ public class SearchFriendsFragment extends Fragment {
 
         Api api = retrofit.create(Api.class);
 
-        //pull user_id from shared preferences object
         userID = String.valueOf(preferenceConfig.readUserId());
-        Log.d(TAG, userID);
         Call<UserList> call = api.addContacts(userID, numbers);
 
         call.enqueue(new Callback<UserList>() {
@@ -218,26 +201,22 @@ public class SearchFriendsFragment extends Fragment {
         });
     }
     @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-              switch (requestCode) {
-            case 1: {
+    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+        if (requestCode == 1) {
+            // If request is cancelled, the result arrays are empty.
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    updateList(get_Contacts());
-                    final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    }, 1000);
-                }
-                else {
-                    Toast.makeText(context, "Permission denied to read your Contacts", Toast.LENGTH_SHORT).show();
-                }
+                updateList(get_Contacts());
+                final Handler handler = new Handler();
+                handler.postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        adapter.notifyDataSetChanged();
+                    }
+                }, 1000);
+            }
+            else {
+                Toast.makeText(context, "Permission denied to read your Contacts", Toast.LENGTH_SHORT).show();
             }
         }
     }

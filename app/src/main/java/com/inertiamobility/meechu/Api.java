@@ -13,8 +13,8 @@ import retrofit2.http.Query;
 
 public interface Api {
 
-    // String BASE_URL = "https://meechu.me/api/v1/";
-    String BASE_URL = "http://34.70.78.151/api/v1/";
+    String BASE_URL = "https://meechu.me/api/v1/";
+    // String BASE_URL = "http://34.70.78.151/api/v1/";
 
     // User Registration
     @POST("users/register_new_user")
@@ -24,7 +24,7 @@ public interface Api {
 
     // Make an event
     @POST("events")
-    Call<EventResponse> postEvent(
+    Call<Event> postEvent(
             @HeaderMap Map<String, String> headers,
             @Body Event event);
 
@@ -57,14 +57,8 @@ public interface Api {
             @HeaderMap Map<String, String> headers,
             @Body User user);
 
-    //@PUT("api/v1/users")
-    //Call<User> updateUser(
-    //        @HeaderMap Map<String, String> headers,
-    //        @Body User user);
-
-
     @GET("api/v1/users")
-    Call<ResponseUser> findUsers(@Query("phone_number") String params );
+    Call<User> findUsersFromPhoneNumber(@Query("phone_number") String params );
 
     //Follow status
     @GET("api/v1/followStatus")
@@ -74,7 +68,8 @@ public interface Api {
     @GET("api/v1/addContacts")
     Call<UserList> addContacts(@Query("user_id") String params, @Query(value = "numbers[]") List<String> params2);
 
-
-
-
+    //@PUT("api/v1/users")
+    //Call<User> updateUser(
+    //        @HeaderMap Map<String, String> headers,
+    //        @Body User user);
 }

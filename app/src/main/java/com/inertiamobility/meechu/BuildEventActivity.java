@@ -209,21 +209,21 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 Api api = retrofit.create(Api.class);
                 HashMap<String, String> headerMap = new HashMap<String, String>();
                 headerMap.put("Content-Type", "application/json");
-                Call<EventResponse> call = api.postEvent(headerMap,
+                Call<Event> call = api.postEvent(headerMap,
                         newEvent );
 
-                call.enqueue(new Callback<EventResponse>() {
+                call.enqueue(new Callback<Event>() {
                     @Override
-                    public void onResponse(Call<EventResponse> call, Response<EventResponse> response) {
+                    public void onResponse(Call<Event> call, Response<Event> response) {
 
                         Intent output = new Intent();
-                        output.putExtra("Event ID", response.body().getData());
+                        output.putExtra("Event ID", response.body().getId());
                         setResult(RESULT_OK, output);
                         finish();
                     }
 
                     @Override
-                    public void onFailure(Call<EventResponse> call, Throwable t) {
+                    public void onFailure(Call<Event> call, Throwable t) {
                         Toast.makeText(BuildEventActivity.this, "Something went wrong", Toast.LENGTH_SHORT).show();
                     }
                 });

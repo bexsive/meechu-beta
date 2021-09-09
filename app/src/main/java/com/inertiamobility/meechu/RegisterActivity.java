@@ -4,16 +4,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.util.Log;
 import android.util.Patterns;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import java.util.HashMap;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,7 +18,6 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class RegisterActivity extends AppCompatActivity {
-
     private static final String TAG = "RegisterActivity";
     private SharedPreferenceConfig preferenceConfig;
 
@@ -148,7 +144,7 @@ public class RegisterActivity extends AppCompatActivity {
                     newUser.setPhoneNumber(phoneNumber.getText().toString());
                 }
 
-                // Email
+                // Email, validate format
                 if(email.getText().toString().equals("")){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
@@ -163,9 +159,7 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                     return;
-                }
-                // Validate email format
-                else if(!isValidEmail(email.getText().toString())){
+                } else if(!isValidEmail(email.getText().toString())){
                     builder = new AlertDialog.Builder(RegisterActivity.this);
                     builder.setTitle("Something went wrong...");
                     builder.setMessage("Email format not valid");
@@ -179,8 +173,7 @@ public class RegisterActivity extends AppCompatActivity {
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
                     return;
-                }
-                else{
+                } else{
                     newUser.setEmail(email.getText().toString());
                 }
 
@@ -246,32 +239,19 @@ public class RegisterActivity extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
-
-                            // TODO: Remove this after testing
-                            Log.d(TAG, "onResponse: Server Response: " + response.toString());
-
-
                             if (response.message().equals("Unprocessable Entity")){
                                 Toast.makeText(RegisterActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             if (newUser.getEmail().equals(response.body().getEmail()))
                                 newUser.setId(response.body().getId());
-                                Log.d(TAG, "onResponse: Server Response Message: " + response.message());
-                                Log.d(TAG, "onResponse: Server Response Body: " + response.toString());
-                                Log.d(TAG, "onResponse: Server Response ID: " + response.body().getId());
-                                Log.d(TAG, "onResponse: Server Response email: " + response.body().getEmail());
 
-
-                            // TODO: Remove this after testing
-                                Toast.makeText(RegisterActivity.this, "Response" + newUser.getId(), Toast.LENGTH_LONG).show();
                                 preferenceConfig.writeLoginStatus(true);
                                 preferenceConfig.writeUserId(Integer.parseInt(newUser.getId()));
 
                                 startActivity(new Intent(RegisterActivity.this, MainActivity.class));
                                 finish();
                         }
-
 
                         @Override
                         public void onFailure(Call<User> call, Throwable t) {

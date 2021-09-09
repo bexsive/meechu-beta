@@ -142,6 +142,7 @@ public class EventActivity extends AppCompatActivity {
                     maybeButton.setVisibility(View.VISIBLE);
                     leaveButton.setVisibility(View.GONE);
                 } else {
+                    isNew = Boolean.FALSE;
                     eventParticipant.setUserId(response.body().getUserId());
                     eventParticipant.setEventId(response.body().getEventId());
                     eventParticipant.setAttending(response.body().getAttending());
@@ -204,6 +205,7 @@ public class EventActivity extends AppCompatActivity {
                         attendingButton.setVisibility(View.VISIBLE);
                         maybeButton.setVisibility(View.GONE);
                     }
+                    isNew = Boolean.FALSE;
                     leaveButton.setVisibility(View.VISIBLE);
                 }
 
@@ -219,7 +221,7 @@ public class EventActivity extends AppCompatActivity {
             HashMap<String, String> headerMap = new HashMap<>();
             headerMap.put("Content-Type", "application/json");
 
-            Call<EventParticipant> call = api.updateAttendance(preferenceConfig.readUserId(), headerMap, eventParticipant);
+            Call<EventParticipant> call = api.updateAttendance(eventParticipant.getId(), headerMap, eventParticipant);
             call.enqueue(new Callback<EventParticipant>() {
                 @Override
                 public void onResponse(Call<EventParticipant> call, Response<EventParticipant> response) {
