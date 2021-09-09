@@ -7,12 +7,14 @@ import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
+import retrofit2.http.PUT;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 public interface Api {
 
-    String BASE_URL = "https://meechu.me/api/v1/";
-    // String BASE_URL = "http://34.70.78.151/api/v1/";
+    // String BASE_URL = "https://meechu.me/api/v1/";
+    String BASE_URL = "http://34.70.78.151/api/v1/";
 
     // User Registration
     @POST("users/register_new_user")
@@ -32,8 +34,23 @@ public interface Api {
 
     // Check Participant status
     @GET("check_attendance")
-    Call<ResponseEventParticipant> check_attendance(@Query("user_id") String params, @Query(value = "event_id") String params2 );
+    Call<EventParticipant> check_attendance(@Query("user_id") Integer params, @Query(value = "event_id") Integer params2 );
 
+    // Create Participant
+    @POST("ep")
+    Call<EventParticipant> createEventParticipant(
+            @HeaderMap Map<String, String> headers,
+            @Body EventParticipant eventParticipant);
+
+    // Update Participant
+    @PUT("ep/{id}")
+    Call<EventParticipant> updateAttendance(
+            @Path("id") int id,
+            @HeaderMap Map<String, String> headers,
+            @Body EventParticipant eventParticipant);
+
+    // destroyParticipant
+    // @DELETE
 
     @POST("api/v1/sessions")
     Call<User> login(
@@ -44,6 +61,7 @@ public interface Api {
     //Call<User> updateUser(
     //        @HeaderMap Map<String, String> headers,
     //        @Body User user);
+
 
     @GET("api/v1/users")
     Call<ResponseUser> findUsers(@Query("phone_number") String params );
@@ -56,17 +74,7 @@ public interface Api {
     @GET("api/v1/addContacts")
     Call<UserList> addContacts(@Query("user_id") String params, @Query(value = "numbers[]") List<String> params2);
 
-    //createParticipant
-    @POST("api/v1/event_participants")
-    Call<JsonObject> postEventParticipant(
-            @HeaderMap Map<String, String> headers,
-            @Body EventParticipant eventParticipant);
 
-    //editParticipant
-    @GET("api/v1/editAttendance")
-    Call<JsonObject> editAttendance(@Query("id") String params, @Query(value = "attending") String params2);
 
-    //destroyParticipant
-   // @DELETE
 
 }

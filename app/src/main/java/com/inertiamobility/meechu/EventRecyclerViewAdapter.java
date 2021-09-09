@@ -71,7 +71,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
             public void onClick(View view) {
                 Intent intent = new Intent(mContext, EventActivity.class);
                 Bundle bundle = new Bundle();
-                bundle.putString("event_id", events.get(position).getId());
+                bundle.putInt("event_id", events.get(position).getId());
                 bundle.putString("event_name", events.get(position).getName());
                 bundle.putString("venue_name", events.get(position).getVenueName());
                 bundle.putString("start_time", events.get(position).getStartTime());

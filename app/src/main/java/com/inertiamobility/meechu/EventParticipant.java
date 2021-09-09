@@ -9,73 +9,73 @@ class EventParticipant implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    private Integer id;
 
     @SerializedName("user_id")
     @Expose
-    private String userId;
+    private Integer userId;
 
     @SerializedName("event_id")
     @Expose
-    private String eventId;
+    private Integer eventId;
 
     @SerializedName("creator")
     @Expose
-    private String creator;
+    private boolean creator;
 
     @SerializedName("admin")
     @Expose
-    private String admin;
+    private boolean admin;
 
     @SerializedName("attending")
     @Expose
-    private String attending;
+    private boolean attending;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
-    public String getEventId() {
+    public Integer getEventId() {
         return eventId;
     }
 
-    public void setEventId(String eventId) {
+    public void setEventId(Integer eventId) {
         this.eventId = eventId;
     }
 
-    public String getCreator() {
+    public boolean getCreator() {
         return creator;
     }
 
-    public void setCreator(String creator) {
+    public void setCreator(boolean creator) {
         this.creator = creator;
     }
 
-    public String getAdmin() {
+    public boolean getAdmin() {
         return admin;
     }
 
-    public void setAdmin(String admin) {
+    public void setAdmin(boolean admin) {
         this.admin = admin;
     }
 
-    public String getAttending() {
+    public boolean getAttending() {
         return attending;
     }
 
-    public void setAttending(String attending) {
+    public void setAttending(boolean attending) {
         this.attending = attending;
     }
 }

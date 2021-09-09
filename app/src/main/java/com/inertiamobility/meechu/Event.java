@@ -8,7 +8,7 @@ public class Event implements Serializable {
 
     @SerializedName("id")
     @Expose
-    private String id;
+    private Integer id;
 
     @SerializedName("name")
     @Expose
@@ -28,7 +28,7 @@ public class Event implements Serializable {
 
     @SerializedName("user_id")
     @Expose
-    private String userId;
+    private Integer userId;
 
     @SerializedName("lat")
     @Expose
@@ -38,11 +38,11 @@ public class Event implements Serializable {
     @Expose
     private String lng;
 
-    public String getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -78,11 +78,11 @@ public class Event implements Serializable {
         this.endTime = endTime;
     }
 
-    public String getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
 
@@ -114,11 +114,5 @@ public class Event implements Serializable {
                 ", lng='" + lng + '\'' +
                 '}';
     }
-
-    public Event(String name){
-        this.setName(name);
-    }
-    public Event(){
-
-    }
+    public Event(){}
 }

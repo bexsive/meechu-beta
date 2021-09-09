@@ -180,7 +180,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
             public void onClick(View view) {
 
                 newEvent.setName(WordUtils.capitalize(eventNameEditText.getText().toString()));
-                newEvent.setUserId(String.valueOf(preferenceConfig.readUserId()));
+                newEvent.setUserId(preferenceConfig.readUserId());
 
                 newEvent.setStartTime(componentTimeToTimestamp(startDateYear, startDateMonth, startDateDay, startTimeHour, startTimeMin));
                 newEvent.setEndTime(componentTimeToTimestamp(endDateYear, endDateMonth, endDateDay, endTimeHour, endTimeMin));
