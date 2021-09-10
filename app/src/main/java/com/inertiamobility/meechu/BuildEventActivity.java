@@ -100,7 +100,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     }
 
     private void init() {
-
         setStartDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -215,7 +214,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
                 call.enqueue(new Callback<Event>() {
                     @Override
                     public void onResponse(Call<Event> call, Response<Event> response) {
-
                         Intent output = new Intent();
                         output.putExtra("Event ID", response.body().getId());
                         setResult(RESULT_OK, output);
@@ -281,7 +279,7 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     String componentTimeToTimestamp(int year, int month, int day, int hour, int minute) {
         Calendar c = Calendar.getInstance();
         c.set(year, month, day, hour, minute, 0);
-        long dv = Long.valueOf(c.getTimeInMillis());// its need to be in milisecond
+        long dv = Long.valueOf(c.getTimeInMillis());// it needs to be in milisecond
         Date df = new Date(dv);
         //TODO update format
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).format(df);

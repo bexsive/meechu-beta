@@ -25,7 +25,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
-
 import static android.Manifest.permission.*;
 import static android.content.pm.PackageManager.*;
 
@@ -78,7 +77,6 @@ public class SearchFriendsFragment extends Fragment {
                         call.enqueue(new Callback<User>() {
                             @Override
                             public void onResponse(Call<User> call, Response<User> response) {
-
                                 //TODO: Exception handling for no matches
                                 // Start new activity passing User Info
                                 if (response.body().getId() == null){
@@ -133,7 +131,7 @@ public class SearchFriendsFragment extends Fragment {
     }
 
     public List<String> get_Contacts(){
-        //TODO:  Check contacts permissions
+        //TODO: Check contacts permissions
         List<String> numbers = new ArrayList<>();
 
         ContentResolver contentResolver = getActivity().getContentResolver();
@@ -187,8 +185,7 @@ public class SearchFriendsFragment extends Fragment {
                 users.clear();
                 if (userList.users.size() == 0){
                     Toast.makeText(getContext(), "No new Users :/", Toast.LENGTH_LONG).show();
-                }
-                else {
+                } else {
                     for (int i = 0; i < userList.users.size(); i++) {
                         users.add(userList.users.get(i));
                     }

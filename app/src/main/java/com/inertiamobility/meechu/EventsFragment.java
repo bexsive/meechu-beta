@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -85,7 +84,6 @@ public class EventsFragment extends Fragment {
     }
 
     public void updateList(){
-
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(Api.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -93,7 +91,6 @@ public class EventsFragment extends Fragment {
 
         Api api = retrofit.create(Api.class);
 
-        //pull user_id from shared preferences object
         userID = String.valueOf(preferenceConfig.readUserId());
         Call<EventList> call = api.getFeed(userID);
 
@@ -116,9 +113,7 @@ public class EventsFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Make sure the request was successful
         if (resultCode == Activity.RESULT_OK) {
-            Log.d(TAG,"Success ID: " + data.getStringExtra("Event ID"));
             //TODO: Add new event to event list, as an insertion
-
         }
     }
 }

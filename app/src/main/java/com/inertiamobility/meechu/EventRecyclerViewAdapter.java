@@ -9,7 +9,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -45,7 +44,6 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
     public void onBindViewHolder(ViewHolder holder, final int position) {
 
         // Example using glide for user profile pictures
-
         // .load(path)
         //Glide.with(mContext).asBitmap().load(events.get(position).getUserId()).into(holder.image);
 
@@ -89,12 +87,10 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-
         // Images
         CircleImageView image;
         TextView eventNameText, venueNameText, startTimeText, distanceAwayText;
         RelativeLayout parentLayout;
-
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -107,7 +103,6 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
             distanceAwayText = itemView.findViewById(R.id.distanceAwayText);
 
             parentLayout = itemView.findViewById(R.id.parent_layout);
-
         }
     }
 
@@ -117,9 +112,7 @@ public class EventRecyclerViewAdapter extends RecyclerView.Adapter<EventRecycler
         double dlat = (lat2 - lat1) * d2r;
         double a = Math.pow(Math.sin(dlat/2.0), 2) + Math.cos(lat1*d2r) * Math.cos(lat2*d2r) * Math.pow(Math.sin(dlong/2.0), 2);
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        double d = 3956 * c;
-
-        return d;
+        return (3956 * c);
     }
 
 }

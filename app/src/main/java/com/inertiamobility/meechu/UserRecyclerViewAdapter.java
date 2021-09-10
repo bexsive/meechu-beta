@@ -8,14 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import java.util.List;
-
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerViewAdapter.ViewHolder> {
     private static final String TAG = "UserRecyclerViewAdapter";
-
     private List<User> users;
     private Context mContext;
 
@@ -33,19 +30,15 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, final int position) {
-
         // Example using glide for user profile pictures
-
         // .load(path)
         //Glide.with(mContext).asBitmap().load(events.get(position).getUserId()).into(holder.image);
 
         holder.userNameText.setText(users.get(position).getFirstName() + " " + users.get(position).getLastName());
 
-
         holder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
                 Intent intent = new Intent(mContext, ProfileActivity.class);
                 Bundle bundle = new Bundle();
                 bundle.putString("ID", users.get(position).getId());
@@ -63,12 +56,10 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
-
         // Images
         CircleImageView image;
         TextView userNameText;
         RelativeLayout parentLayout;
-
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -78,7 +69,6 @@ public class UserRecyclerViewAdapter extends RecyclerView.Adapter<UserRecyclerVi
             userNameText = itemView.findViewById(R.id.userNameText);
 
             parentLayout = itemView.findViewById(R.id.parent_layout);
-
         }
     }
 }

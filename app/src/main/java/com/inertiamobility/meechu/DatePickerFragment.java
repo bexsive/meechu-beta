@@ -8,7 +8,6 @@ import android.widget.DatePicker;
 import java.util.Calendar;
 
 public class DatePickerFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-
     static final int START_DATE = 1;
     static final int END_DATE = 2;
 
@@ -18,14 +17,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
     TheListener listener;
 
     public interface TheListener{
-        public void returnStartDate(int year, int month, int day);
-        public void returnEndDate(int year, int month, int day);
-
+        void returnStartDate(int year, int month, int day);
+        void returnEndDate(int year, int month, int day);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         // Use the current date as the default date in the picker
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
@@ -39,7 +36,6 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
         }
 
         switch (mChosenDate) {
-
             case START_DATE:
                 cur = START_DATE;
                 return new DatePickerDialog(getActivity(), this, year, month, day);
@@ -47,14 +43,12 @@ public class DatePickerFragment extends DialogFragment implements DatePickerDial
             case END_DATE:
                 cur = END_DATE;
                 return new DatePickerDialog(getActivity(), this, year, month, day);
-
         }
         return null;
     }
 
     @Override
     public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-
         if (listener != null) {
             if (cur == START_DATE) {
                 listener.returnStartDate(year, month, day);

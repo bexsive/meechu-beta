@@ -1,5 +1,4 @@
 package com.inertiamobility.meechu;
-
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
@@ -7,25 +6,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.google.gson.JsonObject;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-
 public class ProfileActivity extends AppCompatActivity{
-
     private static final String TAG = "ProfileActivity";
     private SharedPreferenceConfig preferenceConfig;
-
     Button follow_button;
     TextView userName, bio;
     User user;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,12 +39,10 @@ public class ProfileActivity extends AppCompatActivity{
         follow_button = findViewById(R.id.followButton);
 
         bio = findViewById(R.id.textUserBio);
-        //bio.setText("User ID is: " + bundle.getString("ID"));
 
         follow_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 Retrofit retrofit = new Retrofit.Builder()
                         .baseUrl(Api.BASE_URL)
                         .addConverterFactory(GsonConverterFactory.create())
@@ -62,10 +53,9 @@ public class ProfileActivity extends AppCompatActivity{
                 call.enqueue(new Callback<JsonObject>() {
                     @Override
                     public void onResponse(Call<JsonObject> call, Response<JsonObject> response) {
-
+                        //TODO: Need to re-write for new API
                         JsonObject responseMessage = response.body();
 
-                        Log.e(TAG,"Message:" + responseMessage.get("message") );
                         String one = responseMessage.get("message").toString();
                         String two = "user";
 

@@ -10,9 +10,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import java.util.HashMap;
-
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -61,9 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     AlertDialog alertDialog = builder.create();
                     alertDialog.show();
-                }
-                else {
-
+                } else {
                     user.setEmail(Email.getText().toString());
                     user.setPassword(Pass.getText().toString());
                     Retrofit retrofit = new Retrofit.Builder()
@@ -80,9 +76,6 @@ public class LoginActivity extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
-                            // Tracking
-                            Log.d(TAG, "onResponse: Server Response: " + response.toString());
-
                             user.setId(response.body().getId());
                             Toast.makeText(LoginActivity.this, "Response" + user.getId(), Toast.LENGTH_LONG).show();
 

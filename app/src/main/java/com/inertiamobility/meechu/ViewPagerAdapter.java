@@ -6,17 +6,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
 public class ViewPagerAdapter extends FragmentPagerAdapter {
-
     public ViewPagerAdapter(FragmentManager fm) {
         super(fm);
     }
 
     @Override
     public Fragment getItem(int position) {
-
         switch (position) {
-            case 0:
-                return new EventsFragment();
             case 1:
                 return new SearchFriendsFragment();
 
@@ -66,7 +62,6 @@ public class ViewPagerAdapter extends FragmentPagerAdapter {
 
             default:
                 title = "Broken Naming";
-
         }
         return title;
     }

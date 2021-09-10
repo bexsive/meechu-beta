@@ -2,7 +2,6 @@ package com.inertiamobility.meechu;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import android.text.format.DateUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;

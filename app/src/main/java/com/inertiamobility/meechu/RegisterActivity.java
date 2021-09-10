@@ -239,6 +239,7 @@ public class RegisterActivity extends AppCompatActivity {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
+                            // TODO: At some point need to handle existing email usage on client side
                             if (response.message().equals("Unprocessable Entity")){
                                 Toast.makeText(RegisterActivity.this, "Email not valid", Toast.LENGTH_SHORT).show();
                                 return;

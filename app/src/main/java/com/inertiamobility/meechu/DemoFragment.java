@@ -16,12 +16,8 @@ public class DemoFragment extends Fragment {
     TextView txt_display;
     Context context;
 
-
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-
-
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate((R.layout.fragment_demo), container, false);
         context = view.getContext();
         txt_display = view.findViewById(R.id.txt_display);
@@ -31,5 +27,4 @@ public class DemoFragment extends Fragment {
 
         return view;
     }
-
 }

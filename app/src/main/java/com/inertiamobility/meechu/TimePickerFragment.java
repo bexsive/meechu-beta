@@ -4,28 +4,22 @@ import android.app.DialogFragment;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.widget.TimePicker;
-
 import java.util.Calendar;
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-
     static final int START_TIME = 1;
     static final int END_TIME = 2;
-
     private int mChosenTime;
-
     int cur = 0;
     TheListener listener;
 
     public interface TheListener{
-        public void returnStartTime(int hour, int min);
-        public void returnEndTime(int hour, int min);
-
+        void returnStartTime(int hour, int min);
+        void returnEndTime(int hour, int min);
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-
         listener = (TheListener) getActivity();
 
         Bundle bundle = this.getArguments();
@@ -34,7 +28,6 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
         }
 
         switch (mChosenTime) {
-
             case START_TIME:
                 cur = START_TIME;
                 Calendar c = Calendar.getInstance();
@@ -55,7 +48,6 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
 
     @Override
     public void onTimeSet(TimePicker timePicker, int hour, int min) {
-
         if (listener != null) {
             if (cur == START_TIME) {
                 listener.returnStartTime(hour, min);
