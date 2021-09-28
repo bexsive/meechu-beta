@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.HeaderMap;
 import retrofit2.http.POST;
@@ -50,7 +51,9 @@ public interface Api {
             @Body EventParticipant eventParticipant);
 
     // destroyParticipant
-    // @DELETE
+    @DELETE("ep/{id}")Call<EventParticipant> deleteAttendant(
+            @Path("id") int id,
+            @HeaderMap Map<String, String> headers);
 
     @POST("api/v1/sessions")
     Call<User> login(

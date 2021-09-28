@@ -95,7 +95,33 @@ public class EventActivity extends AppCompatActivity {
             public void onClick(View v) {
                 // TODO: Delete the EventParticipant
                 // TODO: pop-up are you sure, then logic to check if anyone else is going, and delete event or pass admin permissions to next attendee (If none are already set)
-                Toast.makeText(getApplicationContext(), "Can't delete events yet, upgrades coming", Toast.LENGTH_LONG).show();
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl(Api.BASE_URL)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+
+                Api api = retrofit.create(Api.class);
+                HashMap<String, String> headerMap = new HashMap<>();
+                headerMap.put("Content-Type", "application/json");
+
+                Call<EventParticipant> call = api.deleteAttendant(eventParticipant.getId(), headerMap);
+                call.enqueue(new Callback<EventParticipant>() {
+                    @Override
+                    public void onResponse(Call<EventParticipant> call, Response<EventParticipant> response) {
+                        attendingText.setText("Not Attending");
+                        attendingButton.setVisibility(View.VISIBLE);
+                        maybeButton.setVisibility(View.VISIBLE);
+                        leaveButton.setVisibility(View.GONE);
+                        Toast.makeText(getApplicationContext(), "No longer attending", Toast.LENGTH_LONG).show();
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(Call<EventParticipant> call, Throwable t) {
+                        //Testing
+                        Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
 

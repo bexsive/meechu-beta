@@ -22,6 +22,8 @@ import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.Autocomplete;
 import com.google.android.libraries.places.widget.AutocompleteActivity;
 import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
+
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,6 +31,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -277,12 +281,20 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
 
     @TargetApi(Build.VERSION_CODES.N)
     String componentTimeToTimestamp(int year, int month, int day, int hour, int minute) {
+        // Calendar c = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         Calendar c = Calendar.getInstance();
         c.set(year, month, day, hour, minute, 0);
         long dv = Long.valueOf(c.getTimeInMillis());// it needs to be in milisecond
         Date df = new Date(dv);
-        //TODO update format
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US).format(df);
+
+        // Calculate Time zone based on last GPS pull
+        String resultTimeZone = TimezoneMapper.latLngToTimezoneString(preferenceConfig.readUserLat(),
+                preferenceConfig.readUserLng());
+
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.US);
+        sdf.setTimeZone(TimeZone.getTimeZone("Etc/UTC"));
+
+        return sdf.format(df);
     }
 
     @Override
@@ -309,7 +321,6 @@ public class BuildEventActivity extends AppCompatActivity implements TimePickerF
     }
 
     //Helpers
-
     public void setTime(TextView textview, Calendar calendar){
         SimpleDateFormat HHMMformat = new SimpleDateFormat("h:mm a");
         textview.setText("Time: " + HHMMformat.format(calendar.getTime()));
